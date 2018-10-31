@@ -1,0 +1,36 @@
+
+
+title: Danger
+summary: Danger runs during your CI process, and gives teams the chance to automate common code review chores.
+description: |
+  Danger runs during your CI process, and gives teams the chance to automate common code review chores. This provides another logical step in your build, through this Danger can help lint your rote tasks in daily code review. You can use Danger to codify your teams norms. Leaving humans to think about harder problems. She does this by leaving messages inside your PRs based on rules that you create with the Ruby scripting language. Over time, as rules are adhered to, the message is amended to reflect the current state of the code review.
+website: https://github.com/bitrise-steplib/steps-danger
+source_code_url: https://github.com/bitrise-steplib/steps-danger
+support_url: https://github.com/bitrise-steplib/steps-danger/issues
+
+type_tags:
+  - test
+
+is_requires_admin_user: true
+is_always_run: false
+is_skippable: false
+run_if: ""
+
+deps:
+  brew:
+  
+  apt_get:
+  
+
+
+toolkit:
+  go:
+    package_name: github.com/bitrise-steplib/steps-danger
+
+
+inputs:
+  - repository_url: $GIT_REPOSITORY_URL
+    opts:
+      title: Repository URL of your project
+      summary: Repository URL of your project
+      is_required: true
