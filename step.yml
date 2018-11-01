@@ -31,7 +31,7 @@ inputs:
       description: |-
           **SETTING UP AN ACCESS TOKEN**
 
-          [Here’s the link](https://github.com/settings/tokens/new), you should open this in the private session where you just created the new GitHub account. Again, the rights that you give to the token depend on the openness of your projects. You’ll want to save for later, when you add a DANGER\_GITHUB\_API\_TOKEN to your CI.
+          [Here’s the link](https://github.com/settings/tokens/new), you should open this in the private session where you just created the new GitHub account. Again, the rights that you give to the token depend on the openness of your projects. You’ll want to save for later, when you add a `github_api_token` to the step.
           
           **TOKENS FOR OSS PROJECTS**
 
@@ -76,7 +76,7 @@ inputs:
       description: |-
           **SETTING UP AN ACCESS TOKEN**
 
-          Here’s the link, you should open this in the private session where you have just created the new GitLab account. You’ll want to copy the token for later, when you add a DANGER\_GITLAB\_API\_TOKEN to your CI.
+          Here’s the link, you should open this in the private session where you have just created the new GitLab account. You’ll want to copy the token for later, when you add a `gitlab_api_token` to the step.
           
 
           If you are self hosting GitLab, you’ll need to generate an access token for the bot user. You can find the section under “Access Tokens” in the bot user’s profile.
