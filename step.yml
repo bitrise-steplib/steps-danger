@@ -34,7 +34,8 @@ inputs:
       title: Repository URL of your project
       summary: Repository URL of your project
       is_required: true
-  - github_api_token: $DANGER_GITHUB_API_TOKEN
+      
+  - github_api_token:
     opts:
       category: Github
       title: Access token for your project
@@ -53,7 +54,7 @@ inputs:
           [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
       is_sensitive: true
 
-  - gitlab_api_token: $DANGER_GITLAB_API_TOKEN
+  - gitlab_api_token:
     opts:
       category: Gitlab
       title: Access token for your project

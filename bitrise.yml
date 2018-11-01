@@ -3,6 +3,13 @@ default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 app:
   envs:
+  - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
+  - GITLAB_API_TOKEN: $GITLAB_API_TOKEN
+
+  - GITLAB_SAMPLE_APP: $GITLAB_SAMPLE_APP
+  - GITLAB_SAMPLE_APP_PULL_REQUEST_ID: $GITLAB_SAMPLE_APP_PULL_REQUEST_ID
+  - GITLAB_SAMPLE_APP_BRANCH: $GITLAB_SAMPLE_APP_BRANCH
+
   - BITRISE_STEP_GIT_CLONE_URL: https://github.com/bitrise-steplib/steps-danger.git
   - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
 
@@ -18,27 +25,48 @@ workflows:
     - test_gitlab
     
   test_github:
+    description: |-
+        It will test the danger on Github with the step's repository on Github.
     steps:
     - path::./:
-        title: Step Test
+        title: Github test with the step repository on Github
         inputs:
-        - gitlab_api_token: ""
+        - github_api_token: $GITHUB_API_TOKEN
         run_if: true
 
   test_gitlab:
+    description: |-
+        1) It will donwload the provided sample app form Gitlab.
+        2) This sample app has a danger file + gem file with a Gitlab config
+        3) It will set the PULL_REQUEST_ID for the pull request on Gitlab
+        4) It will test the danger on Gitlab with the provided GITLAB_SAMPLE_APP repository on Gitlab.
     steps:
+    - change-workdir:
+        title: tmp dir
+        inputs:
+        - path: ./_tmp
+        - is_create_path: true
     - script:
+        title: Clone the sample app from Gitlab
         inputs:
         - content: |-
             #!/bin/bash
             set -ex
-            envman 
-            envman add --key PULL_REQUEST_ID --value 1
-    - path::./:
-        title: Step Test
+            git clone -b $GITLAB_SAMPLE_APP_BRANCH $GITLAB_SAMPLE_APP .
+    - script:
+        title: Set the PULL_REQUEST_ID for the pull request on Gitlab
         inputs:
-        - repository_url: https://gitlab.com/BirmacherAkos/ios-sample.git
-        - github_api_token: ""
+        - content: |-
+            #!/bin/bash
+            set -ex
+
+            # Set the pull request id of the provided $GITLAB_SAMPLE_APP.
+            envman add --key PULL_REQUEST_ID --value GITLAB_SAMPLE_APP_PULL_REQUEST_ID
+    - path::./:
+        title: "Gitlab test with the provided sample app: GITLAB_SAMPLE_APP on Gitlab"
+        inputs:
+        - repository_url: $GITLAB_SAMPLE_APP
+        - gitlab_api_token: $GITLAB_API_TOKEN
         run_if: true
 
   # ----------------------------------------------------------------
