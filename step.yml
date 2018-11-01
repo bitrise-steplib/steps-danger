@@ -34,7 +34,7 @@ inputs:
       title: Repository URL of your project
       summary: Repository URL of your project
       is_required: true
-  - github_api_token:
+  - github_api_token: $DANGER_GITHUB_API_TOKEN
     opts:
       category: Github
       title: Access token for your project
@@ -47,6 +47,19 @@ inputs:
           **#TOKENS FOR CLOSED SOURCE PROJECTS**
           
           We recommend giving access to the whole repo scope, and its children.
+
+          **NOTE:** You can read more about it:
+
+          [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
+      is_sensitive: true
+
+  - gitlab_api_token: $DANGER_GITLAB_API_TOKEN
+    opts:
+      category: Gitlab
+      title: Access token for your project
+      summary: Access token for your project
+      description: |-
+          If you are self hosting GitLab, you’ll need to generate an access token for the bot user. You can find the section under “Access Tokens” in the bot user’s profile.
 
           **NOTE:** You can read more about it:
 

@@ -9,8 +9,36 @@ app:
 workflows:
   test:
     steps:
+    - go-list:
+    - golint:
+    - errcheck:
+    - go-test:
+    after_run:
+    - test_github
+    - test_gitlab
+    
+  test_github:
+    steps:
     - path::./:
         title: Step Test
+        inputs:
+        - gitlab_api_token: ""
+        run_if: true
+
+  test_gitlab:
+    steps:
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            envman 
+            envman add --key PULL_REQUEST_ID --value 1
+    - path::./:
+        title: Step Test
+        inputs:
+        - repository_url: https://gitlab.com/BirmacherAkos/ios-sample.git
+        - github_api_token: ""
         run_if: true
 
   # ----------------------------------------------------------------
