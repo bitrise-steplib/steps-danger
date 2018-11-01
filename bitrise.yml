@@ -10,11 +10,10 @@ app:
   - GITLAB_SAMPLE_APP_PULL_REQUEST_ID: $GITLAB_SAMPLE_APP_PULL_REQUEST_ID
   - GITLAB_SAMPLE_APP_BRANCH: $GITLAB_SAMPLE_APP_BRANCH
 
-  - BITRISE_STEP_GIT_CLONE_URL: https://github.com/bitrise-steplib/steps-danger.git
-  - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
-
 workflows:
   test:
+    before_run:
+    - audit-this-step
     steps:
     - go-list:
     - golint:

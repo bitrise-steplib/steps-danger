@@ -7,26 +7,16 @@ description: |
 website: https://github.com/bitrise-steplib/steps-danger
 source_code_url: https://github.com/bitrise-steplib/steps-danger
 support_url: https://github.com/bitrise-steplib/steps-danger/issues
-
 type_tags:
   - test
-
 is_requires_admin_user: true
 is_always_run: false
 is_skippable: false
-run_if: ""
-
-deps:
-  brew:
-  
-  apt_get:
-  
-
+run_if: .IsCI
 
 toolkit:
   go:
     package_name: github.com/bitrise-steplib/steps-danger
-
 
 inputs:
   - repository_url: $GIT_REPOSITORY_URL
@@ -34,7 +24,7 @@ inputs:
       title: Repository URL of your project
       summary: Repository URL of your project
       is_required: true
-      
+
   - github_api_token:
     opts:
       category: Github

@@ -31,19 +31,23 @@ func main() {
 	stepconf.Print(cfg)
 	fmt.Println()
 
-	if err := os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL); err != nil {
-		failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
-	}
-
-	if string(cfg.GithubAPIToken) != "" {
-		if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
-			failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
+	//
+	// Set local envs for the step
+	{
+		if err := os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL); err != nil {
+			failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
 		}
-	}
 
-	if string(cfg.GitlabAPIToken) != "" {
-		if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
-			failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
+		if string(cfg.GithubAPIToken) != "" {
+			if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
+				failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
+			}
+		}
+
+		if string(cfg.GitlabAPIToken) != "" {
+			if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
+				failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
+			}
 		}
 	}
 
@@ -75,6 +79,7 @@ func main() {
 				}
 			}
 		}
+		log.Printf("Bundler installed")
 	}
 
 	// Danger
@@ -106,14 +111,12 @@ func main() {
 
 	fmt.Println()
 	log.Donef("Done")
-
 }
 
 func bundlerInstalled() (bool, error) {
 	return rubycommand.IsGemInstalled("bundler", "")
 }
 
-// Install ...
 func installBundler() ([]*command.Model, error) {
 	cmds, err := rubycommand.GemInstall("bundler", "")
 	if err != nil {
