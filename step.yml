@@ -34,3 +34,21 @@ inputs:
       title: Repository URL of your project
       summary: Repository URL of your project
       is_required: true
+  - github_api_token:
+    opts:
+      category: Github
+      title: Access token for your project
+      summary: Access token for your project
+      description: |-
+          **TOKENS FOR OSS PROJECTS**
+          
+          We recommend giving the token the smallest scope possible. This means just public_repo, this scopes limits Danger’s abilities to just writing comments on OSS projects. Because the token can be quite easily be extracted from the CI environment, this minimizes the chance for bad actors to cause chaos with it.
+          
+          **#TOKENS FOR CLOSED SOURCE PROJECTS**
+          
+          We recommend giving access to the whole repo scope, and its children.
+
+          **NOTE:** You can read more about it:
+
+          [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
+      is_sensitive: true

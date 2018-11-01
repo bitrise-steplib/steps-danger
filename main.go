@@ -14,7 +14,8 @@ import (
 
 // Config ...
 type Config struct {
-	RepositoryURL string `env:"repository_url,required"`
+	RepositoryURL  string          `env:"repository_url,required"`
+	GithubAPIToken stepconf.Secret `env:"github_api_token"`
 }
 
 func main() {
@@ -30,6 +31,10 @@ func main() {
 	fmt.Println()
 
 	os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL)
+
+	if string(cfg.GithubAPIToken) != "" {
+		os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken))
+	}
 
 	//
 	// Check dependencies

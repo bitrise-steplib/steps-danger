@@ -3,33 +3,15 @@ default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 app:
   envs:
-  - SAMPLE_APP: https://github.com/bitrise-samples/iOS-Sample.git
-
   - BITRISE_STEP_GIT_CLONE_URL: https://github.com/bitrise-steplib/steps-danger.git
   - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
 
 workflows:
   test:
     steps:
-    - change-workdir:
-        title: Switch working dir to test / _tmp dir
-        run_if: true
-        inputs:
-        - path: ./_tmp
-        - is_create_path: true
-    - script:
-        title: Cloning sample app
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-
-            git clone https://github.com/bitrise-samples/iOS-Sample.git .
     - path::./:
         title: Step Test
         run_if: true
-        inputs:
-        - repository_url: "$SAMPLE_APP"
 
   # ----------------------------------------------------------------
   # --- workflows to Share this step into a Step Library
