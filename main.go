@@ -14,9 +14,15 @@ import (
 
 // Config ...
 type Config struct {
-	RepositoryURL  string          `env:"repository_url,required"`
-	GithubAPIToken stepconf.Secret `env:"github_api_token"`
-	GitlabAPIToken stepconf.Secret `env:"gitlab_api_token"`
+	RepositoryURL string `env:"repository_url,required"`
+
+	GithubAPIToken   stepconf.Secret `env:"github_api_token"`
+	GithubHost       string          `env:"github_host"`
+	GithubAPIBaseURL string          `env:"github_api_base_url"`
+
+	GitlabAPIToken   stepconf.Secret `env:"gitlab_api_token"`
+	GitlabHost       string          `env:"gitlab_host"`
+	GitlabAPIBaseURL string          `env:"gitlab_api_base_url"`
 }
 
 func main() {
@@ -31,6 +37,8 @@ func main() {
 	stepconf.Print(cfg)
 	fmt.Println()
 
+	validateInputs(cfg)
+
 	//
 	// Set local envs for the step
 	{
@@ -38,22 +46,51 @@ func main() {
 			failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
 		}
 
-		if string(cfg.GithubAPIToken) != "" {
-			if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
-				failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
+		// Github
+		{
+			if string(cfg.GithubAPIToken) != "" {
+				if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
+					failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
+				}
+			}
+
+			if string(cfg.GithubHost) != "" {
+				if err := os.Setenv("DANGER_GITHUB_HOST", string(cfg.GithubHost)); err != nil {
+					failf("Failed to set env DANGER_GITHUB_HOST, error: %s", err)
+				}
+			}
+
+			if string(cfg.GithubAPIBaseURL) != "" {
+				if err := os.Setenv("DANGER_GITHUB_API_BASE_URL", string(cfg.GithubAPIBaseURL)); err != nil {
+					failf("Failed to set env DANGER_GITHUB_API_BASE_URL, error: %s", err)
+				}
 			}
 		}
 
-		if string(cfg.GitlabAPIToken) != "" {
-			if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
-				failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
+		// Gitlab
+		{
+			if string(cfg.GitlabAPIToken) != "" {
+				if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
+					failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
+				}
+			}
+
+			if string(cfg.GitlabHost) != "" {
+				if err := os.Setenv("DANGER_GITLAB_HOST", string(cfg.GitlabHost)); err != nil {
+					failf("Failed to set env DANGER_GITLAB_HOST, error: %s", err)
+				}
+			}
+
+			if string(cfg.GitlabAPIBaseURL) != "" {
+				if err := os.Setenv("DANGER_GITLAB_API_BASE_URL", string(cfg.GitlabAPIBaseURL)); err != nil {
+					failf("Failed to set env DANGER_GITLAB_API_BASE_URL, error: %s", err)
+				}
 			}
 		}
 	}
 
 	//
 	// Check dependencies
-	fmt.Println()
 	log.Infof("Checking dependencies")
 	{
 		log.Printf("Bundler...")
@@ -124,6 +161,23 @@ func installBundler() ([]*command.Model, error) {
 	}
 
 	return cmds, nil
+}
+
+func validateInputs(cfg Config) {
+	if cfg.GithubAPIToken == "" && cfg.GitlabAPIToken == "" {
+		failf("None of the API token have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
+	}
+
+	// Github enterprise
+	if (cfg.GithubHost != "" || cfg.GithubAPIBaseURL != "") && (cfg.GithubHost == "" || cfg.GithubAPIBaseURL == "") {
+		failf("If you want to use Github Enterprise you need to set both of the github_host and the github_api_base_url")
+	}
+
+	// Gitlab enterprise
+	if (cfg.GitlabHost != "" || cfg.GitlabAPIBaseURL != "") && (cfg.GitlabHost == "" || cfg.GitlabAPIBaseURL == "") {
+		failf("If you want to use Github Enterprise you need to set both of the gitlab_host and the gitlab_api_base_url")
+	}
+
 }
 
 func failf(format string, v ...interface{}) {
