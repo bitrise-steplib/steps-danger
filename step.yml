@@ -1,5 +1,3 @@
-
-
 title: Danger
 summary: Danger runs during your CI process, and gives teams the chance to automate common code review chores.
 description: |
@@ -31,17 +29,19 @@ inputs:
       title: Access token for your project
       summary: Access token for your project
       description: |-
+          **SETTING UP AN ACCESS TOKEN**
+
+          [Here’s the link](https://github.com/settings/tokens/new), you should open this in the private session where you just created the new GitHub account. Again, the rights that you give to the token depend on the openness of your projects. You’ll want to save for later, when you add a DANGER\_GITHUB\_API\_TOKEN to your CI.
+          
           **TOKENS FOR OSS PROJECTS**
+
+          We recommend giving the token the smallest scope possible. This means just public\_repo, this scopes limits Danger’s abilities to just writing comments on OSS projects. Because the token can be quite easily be extracted from the CI environment, this minimizes the chance for bad actors to cause chaos with it.
           
-          We recommend giving the token the smallest scope possible. This means just public_repo, this scopes limits Danger’s abilities to just writing comments on OSS projects. Because the token can be quite easily be extracted from the CI environment, this minimizes the chance for bad actors to cause chaos with it.
-          
-          **#TOKENS FOR CLOSED SOURCE PROJECTS**
-          
+          **TOKENS FOR CLOSED SOURCE PROJECTS**
+
           We recommend giving access to the whole repo scope, and its children.
 
-          **NOTE:** You can read more about it:
-
-          [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
+          **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
       is_sensitive: true
 
   - gitlab_api_token:
@@ -50,6 +50,11 @@ inputs:
       title: Access token for your project
       summary: Access token for your project
       description: |-
+          **SETTING UP AN ACCESS TOKEN**
+
+          Here’s the link, you should open this in the private session where you have just created the new GitLab account. You’ll want to copy the token for later, when you add a DANGER\_GITLAB\_API\_TOKEN to your CI.
+          
+
           If you are self hosting GitLab, you’ll need to generate an access token for the bot user. You can find the section under “Access Tokens” in the bot user’s profile.
 
           **NOTE:** You can read more about it:
