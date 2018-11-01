@@ -31,14 +31,20 @@ func main() {
 	stepconf.Print(cfg)
 	fmt.Println()
 
-	os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL)
+	if err := os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL); err != nil {
+		failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
+	}
 
 	if string(cfg.GithubAPIToken) != "" {
-		os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken))
+		if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
+			failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
+		}
 	}
 
 	if string(cfg.GitlabAPIToken) != "" {
-		os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken))
+		if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
+			failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
+		}
 	}
 
 	//
