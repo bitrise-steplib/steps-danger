@@ -41,117 +41,106 @@ func main() {
 
 	//
 	// Set local envs for the step
-	{
-		if err := os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL); err != nil {
-			failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
+	if err := os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL); err != nil {
+		failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
+	}
+
+	// Github
+	if string(cfg.GithubAPIToken) != "" {
+		if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
+			failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
 		}
+	}
 
-		// Github
-		{
-			if string(cfg.GithubAPIToken) != "" {
-				if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
-					failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
-				}
-			}
-
-			if string(cfg.GithubHost) != "" {
-				if err := os.Setenv("DANGER_GITHUB_HOST", string(cfg.GithubHost)); err != nil {
-					failf("Failed to set env DANGER_GITHUB_HOST, error: %s", err)
-				}
-			}
-
-			if string(cfg.GithubAPIBaseURL) != "" {
-				if err := os.Setenv("DANGER_GITHUB_API_BASE_URL", string(cfg.GithubAPIBaseURL)); err != nil {
-					failf("Failed to set env DANGER_GITHUB_API_BASE_URL, error: %s", err)
-				}
-			}
+	if string(cfg.GithubHost) != "" {
+		if err := os.Setenv("DANGER_GITHUB_HOST", string(cfg.GithubHost)); err != nil {
+			failf("Failed to set env DANGER_GITHUB_HOST, error: %s", err)
 		}
+	}
 
-		// Gitlab
-		{
-			if string(cfg.GitlabAPIToken) != "" {
-				if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
-					failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
-				}
-			}
+	if string(cfg.GithubAPIBaseURL) != "" {
+		if err := os.Setenv("DANGER_GITHUB_API_BASE_URL", string(cfg.GithubAPIBaseURL)); err != nil {
+			failf("Failed to set env DANGER_GITHUB_API_BASE_URL, error: %s", err)
+		}
+	}
 
-			if string(cfg.GitlabHost) != "" {
-				if err := os.Setenv("DANGER_GITLAB_HOST", string(cfg.GitlabHost)); err != nil {
-					failf("Failed to set env DANGER_GITLAB_HOST, error: %s", err)
-				}
-			}
+	//
+	// Gitlab
+	if string(cfg.GitlabAPIToken) != "" {
+		if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
+			failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
+		}
+	}
 
-			if string(cfg.GitlabAPIBaseURL) != "" {
-				if err := os.Setenv("DANGER_GITLAB_API_BASE_URL", string(cfg.GitlabAPIBaseURL)); err != nil {
-					failf("Failed to set env DANGER_GITLAB_API_BASE_URL, error: %s", err)
-				}
-			}
+	if string(cfg.GitlabHost) != "" {
+		if err := os.Setenv("DANGER_GITLAB_HOST", string(cfg.GitlabHost)); err != nil {
+			failf("Failed to set env DANGER_GITLAB_HOST, error: %s", err)
+		}
+	}
+
+	if string(cfg.GitlabAPIBaseURL) != "" {
+		if err := os.Setenv("DANGER_GITLAB_API_BASE_URL", string(cfg.GitlabAPIBaseURL)); err != nil {
+			failf("Failed to set env DANGER_GITLAB_API_BASE_URL, error: %s", err)
 		}
 	}
 
 	//
 	// Check dependencies
 	log.Infof("Checking dependencies")
-	{
-		log.Printf("Bundler...")
-		if ok, err := bundlerInstalled(); err != nil {
-			failf("Failed to check bundler, error: %s", err)
-		} else if !ok {
-			log.Warnf(`Bundler is not installed`)
-			fmt.Println()
-			log.Printf("Install Bundler")
+	log.Printf("Bundler...")
+	if ok, err := rubycommand.IsGemInstalled("bundler", ""); err != nil {
+		failf("Failed to check bundler, error: %s", err)
+	} else if !ok {
+		log.Warnf(`Bundler is not installed`)
+		fmt.Println()
+		log.Printf("Install Bundler")
 
-			if cmds, err := installBundler(); err != nil {
-				failf("Failed to create Bundler install command, error: %s", err)
-			} else {
-				for _, cmd := range cmds {
-					if out, err := cmd.RunAndReturnTrimmedCombinedOutput(); err != nil {
-						if errorutil.IsExitStatusError(err) {
-							log.Warnf("%s failed: %s", out)
-						} else {
-							log.Warnf("%s failed: %s", err)
-						}
-						failf("Failed to install Bundler, error: %s", err)
-					}
+		cmds, err := rubycommand.GemInstall("bundler", "")
+		if err != nil {
+			failf("failed to create command model, error: %s", err)
+		}
+
+		for _, cmd := range cmds {
+			if out, err := cmd.RunAndReturnTrimmedCombinedOutput(); err != nil {
+				if errorutil.IsExitStatusError(err) {
+					log.Warnf("%s failed: %s", out)
+				} else {
+					log.Warnf("%s failed: %s", err)
 				}
+				failf("Failed to install Bundler, error: %s", err)
 			}
 		}
-		log.Printf("Bundler installed")
+	}
+	log.Printf("Bundler installed")
+
+	//
+	// Danger
+	fmt.Println()
+	log.Infof("Installing dependencies from your gem file")
+
+	cmd := command.New("bundle", "install")
+	cmd.SetStdout(os.Stdout)
+	cmd.SetStderr(os.Stderr)
+	log.Printf("$ %s", cmd.PrintableCommandArgs())
+
+	if err := cmd.Run(); err != nil {
+		failf("Failed to run bundle install, error: %s", err)
 	}
 
-	// Danger
-	{
-		fmt.Println()
-		log.Infof("Installing dependencies from your gem file")
+	fmt.Println()
+	log.Infof("Running danger")
 
-		cmd := command.New("bundle", "install")
-		cmd.SetStdout(os.Stdout)
-		cmd.SetStderr(os.Stderr)
-		log.Printf("$ %s", cmd.PrintableCommandArgs())
+	cmd = command.New("bundle", "exec", "danger")
+	cmd.SetStdout(os.Stdout)
+	cmd.SetStderr(os.Stderr)
+	log.Printf("$ %s", cmd.PrintableCommandArgs())
 
-		if err := cmd.Run(); err != nil {
-			failf("Failed to run bundle install, error: %s", err)
-		}
-
-		fmt.Println()
-		log.Infof("Running danger")
-
-		cmd = command.New("bundle", "exec", "danger")
-		cmd.SetStdout(os.Stdout)
-		cmd.SetStderr(os.Stderr)
-		log.Printf("$ %s", cmd.PrintableCommandArgs())
-
-		if err := cmd.Run(); err != nil {
-			failf("Failed to run bundle exec danger, error: %s", err)
-		}
+	if err := cmd.Run(); err != nil {
+		failf("Failed to run bundle exec danger, error: %s", err)
 	}
 
 	fmt.Println()
 	log.Donef("Done")
-}
-
-func bundlerInstalled() (bool, error) {
-	return rubycommand.IsGemInstalled("bundler", "")
 }
 
 func installBundler() ([]*command.Model, error) {

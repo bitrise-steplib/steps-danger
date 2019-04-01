@@ -85,7 +85,7 @@ inputs:
 
           [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
       is_sensitive: true
-  - gitabb_host:
+  - gitlab_host:
     opts:
       category: Gitlab
       title: Gitlab host
