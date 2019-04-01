@@ -114,15 +114,6 @@ func main() {
 	log.Donef("Done")
 }
 
-func installBundler() ([]*command.Model, error) {
-	cmds, err := rubycommand.GemInstall("bundler", "")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create command model, error: %s", err)
-	}
-
-	return cmds, nil
-}
-
 func validateInputs(cfg Config) {
 	if cfg.GithubAPIToken == "" && cfg.GitlabAPIToken == "" {
 		failf("None of the API token have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
