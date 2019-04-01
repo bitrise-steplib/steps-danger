@@ -76,11 +76,9 @@ func main() {
 		for _, cmd := range cmds {
 			if out, err := cmd.RunAndReturnTrimmedCombinedOutput(); err != nil {
 				if errorutil.IsExitStatusError(err) {
-					log.Warnf("%s failed: %s", out)
-				} else {
-					log.Warnf("%s failed: %s", err)
+					failf("%s failed: %s", cmd.PrintableCommandArgs(), out)
 				}
-				failf("Failed to install Bundler, error: %s", err)
+				failf("%s failed: %s", cmd.PrintableCommandArgs(), err)
 			}
 		}
 	}
