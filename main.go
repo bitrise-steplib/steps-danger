@@ -41,46 +41,19 @@ func main() {
 
 	//
 	// Set local envs for the step
-	if err := os.Setenv("GIT_REPOSITORY_URL", cfg.RepositoryURL); err != nil {
-		failf("Failed to set env GIT_REPOSITORY_URL, error: %s", err)
-	}
-
-	// Github
-	if string(cfg.GithubAPIToken) != "" {
-		if err := os.Setenv("DANGER_GITHUB_API_TOKEN", string(cfg.GithubAPIToken)); err != nil {
-			failf("Failed to set env DANGER_GITHUB_API_TOKEN, error: %s", err)
-		}
-	}
-
-	if string(cfg.GithubHost) != "" {
-		if err := os.Setenv("DANGER_GITHUB_HOST", string(cfg.GithubHost)); err != nil {
-			failf("Failed to set env DANGER_GITHUB_HOST, error: %s", err)
-		}
-	}
-
-	if string(cfg.GithubAPIBaseURL) != "" {
-		if err := os.Setenv("DANGER_GITHUB_API_BASE_URL", string(cfg.GithubAPIBaseURL)); err != nil {
-			failf("Failed to set env DANGER_GITHUB_API_BASE_URL, error: %s", err)
-		}
-	}
-
-	//
-	// Gitlab
-	if string(cfg.GitlabAPIToken) != "" {
-		if err := os.Setenv("DANGER_GITLAB_API_TOKEN", string(cfg.GitlabAPIToken)); err != nil {
-			failf("Failed to set env DANGER_GITLAB_API_TOKEN, error: %s", err)
-		}
-	}
-
-	if string(cfg.GitlabHost) != "" {
-		if err := os.Setenv("DANGER_GITLAB_HOST", string(cfg.GitlabHost)); err != nil {
-			failf("Failed to set env DANGER_GITLAB_HOST, error: %s", err)
-		}
-	}
-
-	if string(cfg.GitlabAPIBaseURL) != "" {
-		if err := os.Setenv("DANGER_GITLAB_API_BASE_URL", string(cfg.GitlabAPIBaseURL)); err != nil {
-			failf("Failed to set env DANGER_GITLAB_API_BASE_URL, error: %s", err)
+	for key, value := range map[string]string{
+		"GIT_REPOSITORY_URL":         string(cfg.RepositoryURL),
+		"DANGER_GITHUB_API_TOKEN":    string(cfg.GithubAPIToken),
+		"DANGER_GITHUB_HOST":         string(cfg.GithubHost),
+		"DANGER_GITHUB_API_BASE_URL": string(cfg.GithubAPIBaseURL),
+		"DANGER_GITLAB_API_TOKEN":    string(cfg.GitlabAPIToken),
+		"DANGER_GITLAB_HOST":         string(cfg.GitlabHost),
+		"DANGER_GITLAB_API_BASE_URL": string(cfg.GitlabAPIBaseURL),
+	} {
+		if value != "" {
+			if err := os.Setenv(key, value); err != nil {
+				failf("Failed to set env %s, error: %s", key, err)
+			}
 		}
 	}
 
