@@ -42,13 +42,13 @@ func main() {
 	//
 	// Set local envs for the step
 	for key, value := range map[string]string{
-		"GIT_REPOSITORY_URL":         string(cfg.RepositoryURL),
+		"GIT_REPOSITORY_URL":         cfg.RepositoryURL,
 		"DANGER_GITHUB_API_TOKEN":    string(cfg.GithubAPIToken),
-		"DANGER_GITHUB_HOST":         string(cfg.GithubHost),
-		"DANGER_GITHUB_API_BASE_URL": string(cfg.GithubAPIBaseURL),
+		"DANGER_GITHUB_HOST":         cfg.GithubHost,
+		"DANGER_GITHUB_API_BASE_URL": cfg.GithubAPIBaseURL,
 		"DANGER_GITLAB_API_TOKEN":    string(cfg.GitlabAPIToken),
-		"DANGER_GITLAB_HOST":         string(cfg.GitlabHost),
-		"DANGER_GITLAB_API_BASE_URL": string(cfg.GitlabAPIBaseURL),
+		"DANGER_GITLAB_HOST":         cfg.GitlabHost,
+		"DANGER_GITLAB_API_BASE_URL": cfg.GitlabAPIBaseURL,
 	} {
 		if value != "" {
 			if err := os.Setenv(key, value); err != nil {
