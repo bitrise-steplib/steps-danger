@@ -60,7 +60,7 @@ workflows:
             set -ex
 
             # Set the pull request id of the provided $GITLAB_SAMPLE_APP.
-            envman add --key PULL_REQUEST_ID --value GITLAB_SAMPLE_APP_PULL_REQUEST_ID
+            envman add --key PULL_REQUEST_ID --value $GITLAB_SAMPLE_APP_PULL_REQUEST_ID
     - path::./:
         title: "Gitlab test with the provided sample app: GITLAB_SAMPLE_APP on Gitlab"
         inputs:
