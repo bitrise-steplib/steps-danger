@@ -25,20 +25,20 @@ workflows:
     
   test_github:
     description: |-
-        It will test the danger on Github with the step's repository on Github.
+        It will test the danger on GitHub with the step's repository on GitHub.
     steps:
     - path::./:
-        title: Github test with the step repository on Github
+        title: GitHub test with the step repository on GitHub
         inputs:
         - github_api_token: $GITHUB_API_TOKEN
         run_if: true
 
   test_gitlab:
     description: |-
-        1) It will donwload the provided sample app form Gitlab.
-        2) This sample app has a danger file + gem file with a Gitlab config
-        3) It will set the PULL_REQUEST_ID for the pull request on Gitlab
-        4) It will test the danger on Gitlab with the provided GITLAB_SAMPLE_APP repository on Gitlab.
+        1) It will donwload the provided sample app form GitLab.
+        2) This sample app has a danger file + gem file with a GitLab config
+        3) It will set the PULL_REQUEST_ID for the pull request on GitLab
+        4) It will test the danger on GitLab with the provided GITLAB_SAMPLE_APP repository on GitLab.
     steps:
     - change-workdir:
         title: tmp dir
@@ -46,14 +46,14 @@ workflows:
         - path: ./_tmp
         - is_create_path: true
     - script:
-        title: Clone the sample app from Gitlab
+        title: Clone the sample app from GitLab
         inputs:
         - content: |-
             #!/bin/bash
             set -ex
             git clone -b $GITLAB_SAMPLE_APP_BRANCH $GITLAB_SAMPLE_APP .
     - script:
-        title: Set the PULL_REQUEST_ID for the pull request on Gitlab
+        title: Set the PULL_REQUEST_ID for the pull request on GitLab
         inputs:
         - content: |-
             #!/bin/bash
@@ -62,7 +62,7 @@ workflows:
             # Set the pull request id of the provided $GITLAB_SAMPLE_APP.
             envman add --key PULL_REQUEST_ID --value $GITLAB_SAMPLE_APP_PULL_REQUEST_ID
     - path::./:
-        title: "Gitlab test with the provided sample app: GITLAB_SAMPLE_APP on Gitlab"
+        title: "GitLab test with the provided sample app: GITLAB_SAMPLE_APP on GitLab"
         inputs:
         - repository_url: $GITLAB_SAMPLE_APP
         - gitlab_api_token: $GITLAB_API_TOKEN

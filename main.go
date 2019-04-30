@@ -116,17 +116,17 @@ func main() {
 
 func validateInputs(cfg Config) {
 	if cfg.GithubAPIToken == "" && cfg.GitlabAPIToken == "" {
-		failf("None of the API token have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
+		failf("None of the API token have been set.  If you want to use GitHub you need to set github_api_token. If you want to use GitLab you need to set gitlab_api_token")
 	}
 
-	// Github enterprise
+	// GitHub Enterprise
 	if (cfg.GithubHost != "" || cfg.GithubAPIBaseURL != "") && (cfg.GithubHost == "" || cfg.GithubAPIBaseURL == "") {
-		failf("If you want to use Github Enterprise you need to set both of the github_host and the github_api_base_url")
+		failf("If you want to use GitHub Enterprise you need to set both of the github_host and the github_api_base_url")
 	}
 
-	// Gitlab enterprise
+	// Self-Managed GitLab
 	if (cfg.GitlabHost != "" || cfg.GitlabAPIBaseURL != "") && (cfg.GitlabHost == "" || cfg.GitlabAPIBaseURL == "") {
-		failf("If you want to use Github Enterprise you need to set both of the gitlab_host and the gitlab_api_base_url")
+		failf("If you want to use Self-Managed GitLab you need to set both of the gitlab_host and the gitlab_api_base_url")
 	}
 
 }
