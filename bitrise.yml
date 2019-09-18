@@ -56,7 +56,9 @@ workflows:
         - content: |-
             #!/bin/bash
             set -ex
-            gem install bundler
+            gem install bundler --force
+            bundler -v
+
     - path::./:
         title: Github test with the step repository on Github
         inputs:
