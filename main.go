@@ -27,7 +27,7 @@ type Config struct {
 
 func validateInputs(cfg Config) {
 	if cfg.GithubAPIToken == "" && cfg.GitlabAPIToken == "" {
-		failf("None of the API token have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
+		failf("None of the API tokens have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
 	}
 
 	// Github enterprise
@@ -37,7 +37,7 @@ func validateInputs(cfg Config) {
 
 	// Gitlab enterprise
 	if (cfg.GitlabHost != "" || cfg.GitlabAPIBaseURL != "") && (cfg.GitlabHost == "" || cfg.GitlabAPIBaseURL == "") {
-		failf("If you want to use Github Enterprise you need to set both of the gitlab_host and the gitlab_api_base_url")
+		failf("If you want to use Gitlab Enterprise you need to set both of the gitlab_host and the gitlab_api_base_url")
 	}
 
 }

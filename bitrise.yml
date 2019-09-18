@@ -26,16 +26,16 @@ workflows:
         It will test the danger on Github with the step's repository on Github.
     steps:
     - script:
-        title: Clone the sample app from Gitlab
+        title: Cleanup _tmp dir
         inputs:
         - content: rm -rf ./_tmp
     - change-workdir:
-        title: tmp dir
+        title: Switch PWD to _tmp dir
         inputs:
         - path: ./_tmp
         - is_create_path: true
     - script:
-        title: Clone the sample app from Gitlab
+        title: Clone the sample app
         inputs:
         - content: |-
             #!/bin/bash
@@ -58,13 +58,12 @@ workflows:
             set -ex
             gem install bundler --force
             bundler -v
-
     - path::./:
-        title: Github test with the step repository on Github
+        title: Step test
+        run_if: true
         inputs:
         - repository_url: $GIT_REPOSITORY_URL
         - github_api_token: $GITHUB_API_TOKEN
-        run_if: true
 
   # ----------------------------------------------------------------
   # --- workflows to Share this step into a Step Library
