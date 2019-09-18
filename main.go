@@ -25,6 +25,28 @@ type Config struct {
 	GitlabAPIBaseURL string          `env:"gitlab_api_base_url"`
 }
 
+func validateInputs(cfg Config) {
+	if cfg.GithubAPIToken == "" && cfg.GitlabAPIToken == "" {
+		failf("None of the API token have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
+	}
+
+	// Github enterprise
+	if (cfg.GithubHost != "" || cfg.GithubAPIBaseURL != "") && (cfg.GithubHost == "" || cfg.GithubAPIBaseURL == "") {
+		failf("If you want to use Github Enterprise you need to set both of the github_host and the github_api_base_url")
+	}
+
+	// Gitlab enterprise
+	if (cfg.GitlabHost != "" || cfg.GitlabAPIBaseURL != "") && (cfg.GitlabHost == "" || cfg.GitlabAPIBaseURL == "") {
+		failf("If you want to use Github Enterprise you need to set both of the gitlab_host and the gitlab_api_base_url")
+	}
+
+}
+
+func failf(format string, v ...interface{}) {
+	log.Errorf(format, v...)
+	os.Exit(1)
+}
+
 func main() {
 	var cfg Config
 	if err := stepconf.Parse(&cfg); err != nil {
@@ -112,26 +134,4 @@ func main() {
 
 	fmt.Println()
 	log.Donef("Done")
-}
-
-func validateInputs(cfg Config) {
-	if cfg.GithubAPIToken == "" && cfg.GitlabAPIToken == "" {
-		failf("None of the API token have been set.  If you want to use Github you need to set github_api_token. If you want to use Gitlab you need to set gitlab_api_token")
-	}
-
-	// Github enterprise
-	if (cfg.GithubHost != "" || cfg.GithubAPIBaseURL != "") && (cfg.GithubHost == "" || cfg.GithubAPIBaseURL == "") {
-		failf("If you want to use Github Enterprise you need to set both of the github_host and the github_api_base_url")
-	}
-
-	// Gitlab enterprise
-	if (cfg.GitlabHost != "" || cfg.GitlabAPIBaseURL != "") && (cfg.GitlabHost == "" || cfg.GitlabAPIBaseURL == "") {
-		failf("If you want to use Github Enterprise you need to set both of the gitlab_host and the gitlab_api_base_url")
-	}
-
-}
-
-func failf(format string, v ...interface{}) {
-	log.Errorf(format, v...)
-	os.Exit(1)
 }
