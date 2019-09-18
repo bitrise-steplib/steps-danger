@@ -49,6 +49,14 @@ workflows:
             #!/bin/bash
             set -ex
             envman add --key BITRISE_PULL_REQUEST --value $PULL_REQUEST_ID
+    - script:
+        title: Ensure Bundler v2
+        run_if: .IsCI
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            gem install bundler
     - path::./:
         title: Github test with the step repository on Github
         inputs:
