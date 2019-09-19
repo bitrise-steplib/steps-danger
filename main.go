@@ -123,7 +123,7 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	cmd = command.New("bundle", "exec", "danger")
+	cmd = command.New("bundle", "exec", "danger", "--fail-on-errors=true")
 	cmd.SetStdout(os.Stdout)
 	cmd.SetStderr(os.Stderr)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
