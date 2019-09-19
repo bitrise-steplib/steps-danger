@@ -25,7 +25,7 @@ inputs:
 
   - github_api_token:
     opts:
-      category: Github
+      category: GitHub
       title: Access token for your project
       summary: Access token for your project
       description: |-
@@ -45,11 +45,11 @@ inputs:
       is_sensitive: true
   - github_host:
     opts:
-      category: Github
-      title: Github host
-      summary: The host that GitHub is running on. You need to set this if you are using **Enterprise Github**.
+      category: GitHub
+      title: GitHub host
+      summary: The host that GitHub is running on. You need to set this if you are using **Enterprise GitHub**.
       description: |-
-          The host that GitHub is running on. You need to set this if you are using **Enterprise Github**.
+          The host that GitHub is running on. You need to set this if you are using **Enterprise GitHub**.
           You can work with GitHub Enterprise by setting the `github_host` and the `github_api_base_url` inputs.
 
           **For example:** `git.corp.evilcorp.com`
@@ -57,11 +57,11 @@ inputs:
           **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
   - github_api_base_url:
     opts:
-      category: Github
-      title: Github API base URL
-      summary: The host that the GitHub Enterprise API is reachable on. You need to set this if you are using **Enterprise Github**.
+      category: GitHub
+      title: GitHub API base URL
+      summary: The host that the GitHub Enterprise API is reachable on. You need to set this if you are using **Enterprise GitHub**.
       description: |-
-          The host that the GitHub Enterprise API is reachable on. You need to set this if you are using **Enterprise Github**.
+          The host that the GitHub Enterprise API is reachable on. You need to set this if you are using **Enterprise GitHub**.
           You can work with GitHub Enterprise by setting the `github_host` and the `github_api_base_url` inputs.
 
           **For example:** `https://git.corp.evilcorp.com/api/v3`
@@ -70,7 +70,7 @@ inputs:
 
   - gitlab_api_token:
     opts:
-      category: Gitlab
+      category: GitLab
       title: Access token for your project
       summary: Access token for your project
       description: |-
@@ -87,24 +87,24 @@ inputs:
       is_sensitive: true
   - gitlab_host:
     opts:
-      category: Gitlab
-      title: Gitlab host
-      summary: The host that Gitlab is running on. You need to set this if you are using **Self Hosted Gitlab**.
+      category: GitLab
+      title: GitLab host
+      summary: The host that GitLab is running on. You need to set this if you are using **Self-Managed GitLab**.
       description: |-
-          The host that Gitlab is running on. You need to set this if you are using **Self Hosted Gitlab**.
-          You can work with Self Hosted Gitlab by setting the `gitlab_host` and the `gitlab_api_base_url` inputs.
+          The host that GitLab is running on. You need to set this if you are using **Self-Managed GitLab**.
+          You can work with Self-Managed GitLab by setting the `gitlab_host` and the `gitlab_api_base_url` inputs.
 
           **For example:** `git.corp.evilcorp.com`
 
           **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
   - gitlab_api_base_url:
     opts:
-      category: Gitlab
-      title: Gitlab API base URL
-      summary: The host that the Self Hosted Gitlab API is reachable on. You need to set this if you are using **Self Hosted Gitlab**.
+      category: GitLab
+      title: GitLab API base URL
+      summary: The host that the Self-Managed GitLab API is reachable on. You need to set this if you are using **Self-Managed GitLab**.
       description: |-
-          The host that the Self Hosted Gitlab API is reachable on. You need to set this if you are using **Self Hosted Gitlab**.
-          You can work with Self Hosted Gitlab by setting the `gitlab_host` and the `gitlab_api_base_url` inputs.
+          The host that the Self-Managed GitLab API is reachable on. You need to set this if you are using **Self-Managed GitLab**.
+          You can work with Self-Managed GitLab by setting the `gitlab_host` and the `gitlab_api_base_url` inputs.
 
           **For example:** `https://git.corp.evilcorp.com/api/v4`
 
