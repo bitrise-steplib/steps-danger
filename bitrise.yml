@@ -22,8 +22,6 @@ workflows:
     - test_github
     
   test_github:
-    description: |-
-        It will test the danger on Github with the step's repository on Github.
     steps:
     - script:
         title: Cleanup _tmp dir
