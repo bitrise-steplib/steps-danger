@@ -6,8 +6,9 @@ import (
 	"strings"
 
 	"github.com/bitrise-io/go-utils/command"
+	"github.com/bitrise-io/go-utils/command/gems"
 	"github.com/bitrise-io/go-utils/command/rubycommand"
-	"github.com/bitrise-io/go-utils/errorutil"
+	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
 )
@@ -47,6 +48,17 @@ func failf(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
+func getBundlerVersion() (gems.Version, error) {
+	lockFileContent, err := fileutil.ReadStringFromFile("Gemfile.lock")
+	if err != nil {
+		log.Warnf("Could not read from Gemfile.lock, error: %s", err)
+		log.Infof("Using unspecified bundler version")
+		return gems.Version{}, nil
+	}
+
+	return gems.ParseBundlerVersion(lockFileContent)
+}
+
 func main() {
 	var cfg Config
 	if err := stepconf.Parse(&cfg); err != nil {
@@ -83,25 +95,28 @@ func main() {
 	// Check dependencies
 	log.Infof("Checking dependencies")
 	log.Printf("Bundler...")
-	if ok, err := rubycommand.IsGemInstalled("bundler", ""); err != nil {
+
+	bundlerVersion, err := getBundlerVersion()
+	if err != nil {
+		failf("Could not determine required bundler version, error: %s", err)
+	}
+
+	if ok, err := rubycommand.IsGemInstalled("bundler", bundlerVersion.Version); err != nil {
 		failf("Failed to check bundler, error: %s", err)
 	} else if !ok {
 		log.Warnf(`Bundler is not installed`)
 		fmt.Println()
-		log.Printf("Install Bundler")
+		log.Printf("Installing Bundler")
 
-		cmds, err := rubycommand.GemInstall("bundler", "")
-		if err != nil {
-			failf("failed to create command model, error: %s", err)
-		}
+		installBundlerCommand := gems.InstallBundlerCommand(bundlerVersion)
 
-		for _, cmd := range cmds {
-			if out, err := cmd.RunAndReturnTrimmedCombinedOutput(); err != nil {
-				if errorutil.IsExitStatusError(err) {
-					failf("%s failed: %s", cmd.PrintableCommandArgs(), out)
-				}
-				failf("%s failed: %s", cmd.PrintableCommandArgs(), err)
-			}
+		log.Donef("$ %s", installBundlerCommand.PrintableCommandArgs())
+		fmt.Println()
+
+		installBundlerCommand.SetStdout(os.Stdout).SetStderr(os.Stderr)
+
+		if err := installBundlerCommand.Run(); err != nil {
+			failf("command failed, error: %s", err)
 		}
 	}
 	log.Printf("Bundler installed")
