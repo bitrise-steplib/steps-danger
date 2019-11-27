@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7f701bf493a03c4fb4c9f22c49048b2bef8484358846d125870f6891baf3e11d"
+  digest = "1:fd5934c9bc6497b3e56ee384eef8181e51b879189cd619d251b90e00141eb90d"
   name = "github.com/bitrise-io/go-utils"
   packages = [
     "colorstring",
@@ -18,15 +18,15 @@
     "pointers",
   ]
   pruneopts = "UT"
-  revision = "ad86bf775472ce1934affb9d3cb7d5ea3dffd16f"
+  revision = "5067a2a682f21030f379f88e853b9e0734a24516"
 
 [[projects]]
   branch = "master"
-  digest = "1:d9f47b0642c42512eefed4aad27c4daf41e9f3380087d302cd0a9f5612143856"
+  digest = "1:65497df2301289c26765c4cf8fcd4709de190dd620ea822ae2dc67edfc598307"
   name = "github.com/bitrise-tools/go-steputils"
   packages = ["stepconf"]
   pruneopts = "UT"
-  revision = "d4d9e08cc4347e8784bb18419fcdceb932e17019"
+  revision = "3c98d95a94d51624a26e99419d0fc03d2aab0055"
 
 [solve-meta]
   analyzer-name = "dep"
