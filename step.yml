@@ -109,3 +109,9 @@ inputs:
           **For example:** `https://git.corp.evilcorp.com/api/v4`
 
           **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
+  - is_fail_on_errors: "true"
+    opts:
+      title: Is fail on errors enabled
+      description: --fail-on-errors flag value
+      value_options: ["true", "false"]
+      is_required: true
