@@ -109,3 +109,11 @@ inputs:
           **For example:** `https://git.corp.evilcorp.com/api/v4`
 
           **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
+  - fail_on_errors: "true"
+    opts:
+      title: Fail on errors
+      description: Marks the step as failed if Danger reports any issues
+      value_options: 
+        - "true"
+        - "false"
+      is_required: true

@@ -24,6 +24,7 @@ type Config struct {
 	GitlabAPIToken   stepconf.Secret `env:"gitlab_api_token"`
 	GitlabHost       string          `env:"gitlab_host"`
 	GitlabAPIBaseURL string          `env:"gitlab_api_base_url"`
+	FailOnErrors     string          `env:"fail_on_errors,opt[true,false]"`
 }
 
 func validateInputs(cfg Config) {
@@ -83,6 +84,7 @@ func main() {
 		"DANGER_GITLAB_API_TOKEN":    string(cfg.GitlabAPIToken),
 		"DANGER_GITLAB_HOST":         cfg.GitlabHost,
 		"DANGER_GITLAB_API_BASE_URL": cfg.GitlabAPIBaseURL,
+		"DANGER_FAIL_ON_ERRORS":      cfg.FailOnErrors,
 	} {
 		if value != "" {
 			if err := os.Setenv(key, value); err != nil {
@@ -138,7 +140,8 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	cmd = command.New("bundle", "exec", "danger", "--fail-on-errors=true")
+	failOnErrorsFlag := fmt.Sprintf("--fail-on-errors=%s", cfg.FailOnErrors)
+	cmd = command.New("bundle", "exec", "danger", failOnErrorsFlag)
 	cmd.SetStdout(os.Stdout)
 	cmd.SetStderr(os.Stderr)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
