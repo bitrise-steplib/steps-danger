@@ -115,4 +115,4 @@ inputs:
       summary: Additional commands and options to append to the danger command call
       description: |-
           Additional commands and options to append to the danger command call. The provided value will be appended to
-          the Danger command call, as is.
+          the `bundle exec danger` command call, as is.
