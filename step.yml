@@ -109,7 +109,7 @@ inputs:
           **For example:** `https://git.corp.evilcorp.com/api/v4`
 
           **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
-  - additional_options:
+  - additional_options: --fail-on-errors=true
     opts:
       title: Additional options for the command call
       summary: Additional commands and options to append to the danger command call
