@@ -15,7 +15,8 @@ import (
 
 // Config ...
 type Config struct {
-	RepositoryURL string `env:"repository_url,required"`
+	RepositoryURL     string `env:"repository_url,required"`
+	AdditionalOptions string `env:"additional_options"`
 
 	GithubAPIToken   stepconf.Secret `env:"github_api_token"`
 	GithubHost       string          `env:"github_host"`
@@ -138,7 +139,7 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	cmd = command.New("bundle", "exec", "danger")
+	cmd = command.New("bundle", append([]string{"exec", "danger"}, cfg.AdditionalOptions)...)
 	cmd.SetStdout(os.Stdout)
 	cmd.SetStderr(os.Stderr)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
