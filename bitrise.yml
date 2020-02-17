@@ -64,7 +64,7 @@ workflows:
         - github_api_token: $GITHUB_API_TOKEN
   test_additional_options:
     envs:
-      FAIL_DANGER: true
+      - FAIL_DANGER: true
     steps:
     - script:
         title: Cleanup _tmp dir
