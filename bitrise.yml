@@ -103,8 +103,8 @@ workflows:
     - path::./:
         title: Step test
         run_if: true
-        additional_options: --fail-on-errors=false
         inputs:
+        - additional_options: --fail-on-errors=false
         - repository_url: $GIT_REPOSITORY_URL
         - github_api_token: $GITHUB_API_TOKEN
 
