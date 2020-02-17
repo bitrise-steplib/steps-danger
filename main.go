@@ -11,8 +11,7 @@ import (
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
-
-	shellquote "github.com/kballard/go-shellquote"
+	"github.com/kballard/go-shellquote"
 )
 
 // Config ...
@@ -60,6 +59,15 @@ func getBundlerVersion() (gems.Version, error) {
 	}
 
 	return gems.ParseBundlerVersion(lockFileContent)
+}
+
+func shellQuote(params string) (string, error) {
+	args, err := shellquote.Split(params)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.Join(args, " "), nil
 }
 
 func main() {
@@ -141,11 +149,10 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	args, err := shellquote.Split(cfg.AdditionalOptions)
+	additionalOptions, err := shellQuote(cfg.AdditionalOptions)
 	if err != nil {
 		log.Errorf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
 	}
-	additionalOptions := strings.Join(args, " ")
 
 	cmd = command.New("bundle", "exec", "danger", additionalOptions)
 	cmd.SetStdout(os.Stdout)
