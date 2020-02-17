@@ -28,6 +28,14 @@
   pruneopts = "UT"
   revision = "3c98d95a94d51624a26e99419d0fc03d2aab0055"
 
+[[projects]]
+  branch = "master"
+  digest = "1:400e113a367b511b9b09ca642ee11d9885485a93838526d697033af334a2fdde"
+  name = "github.com/kballard/go-shellquote"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "95032a82bc518f77982ea72343cc1ade730072f0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -38,6 +46,7 @@
     "github.com/bitrise-io/go-utils/fileutil",
     "github.com/bitrise-io/go-utils/log",
     "github.com/bitrise-tools/go-steputils/stepconf",
+    "github.com/kballard/go-shellquote",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
