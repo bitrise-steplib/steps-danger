@@ -20,6 +20,7 @@ workflows:
     - go-test:
     after_run:
     - test_github
+    - test_additional_options
     
   test_github:
     steps:
