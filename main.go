@@ -11,6 +11,8 @@ import (
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
+
+	shellquote "github.com/kballard/go-shellquote"
 )
 
 // Config ...
@@ -139,7 +141,12 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	cmd = command.New("bundle", append([]string{"exec", "danger"}, cfg.AdditionalOptions)...)
+	args, err := shellquote.Split(cfg.AdditionalOptions)
+	if err != nil {
+		log.Errorf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
+	}
+
+	cmd = command.New("bundle", append([]string{"exec", "danger"}, strings.Join(args, " "))...)
 	cmd.SetStdout(os.Stdout)
 	cmd.SetStderr(os.Stderr)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
