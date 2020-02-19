@@ -61,15 +61,6 @@ func getBundlerVersion() (gems.Version, error) {
 	return gems.ParseBundlerVersion(lockFileContent)
 }
 
-func shellQuote(params string) ([]string, error) {
-	args, err := shellquote.Split(params)
-	if err != nil {
-		return nil, err
-	}
-
-	return args, nil
-}
-
 func main() {
 	var cfg Config
 	if err := stepconf.Parse(&cfg); err != nil {
@@ -149,7 +140,7 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	additionalOptions, err := shellQuote(cfg.AdditionalOptions)
+	additionalOptions, err := shellquote.Split(cfg.AdditionalOptions)
 	if err != nil {
 		failf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
 	}
