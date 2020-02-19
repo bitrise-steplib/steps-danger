@@ -151,7 +151,7 @@ func main() {
 
 	additionalOptions, err := shellQuote(cfg.AdditionalOptions)
 	if err != nil {
-		log.Errorf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
+		failf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
 	}
 
 	cmd = command.New("bundle", append([]string{"exec", "danger"}, additionalOptions...)...)
