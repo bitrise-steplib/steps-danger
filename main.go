@@ -61,13 +61,13 @@ func getBundlerVersion() (gems.Version, error) {
 	return gems.ParseBundlerVersion(lockFileContent)
 }
 
-func shellQuote(params string) (string, error) {
+func shellQuote(params string) ([]string, error) {
 	args, err := shellquote.Split(params)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return strings.Join(args, " "), nil
+	return args, nil
 }
 
 func main() {
@@ -154,7 +154,7 @@ func main() {
 		log.Errorf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
 	}
 
-	cmd = command.New("bundle", "exec", "danger", additionalOptions)
+	cmd = command.New("bundle", append([]string{"exec", "danger"}, additionalOptions...)...)
 	cmd.SetStdout(os.Stdout)
 	cmd.SetStderr(os.Stderr)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
