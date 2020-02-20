@@ -109,11 +109,10 @@ inputs:
           **For example:** `https://git.corp.evilcorp.com/api/v4`
 
           **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
-  - fail_on_errors: "true"
+  - additional_options: --fail-on-errors=true
     opts:
-      title: Fail on errors
-      description: Marks the step as failed if Danger reports any issues
-      value_options: 
-        - "true"
-        - "false"
-      is_required: true
+      title: Additional options for the command call
+      summary: Additional commands and options to append to the danger command call
+      description: |-
+          Additional commands and options to append to the danger command call. The provided value will be appended to
+          the `bundle exec danger` command call, as is.

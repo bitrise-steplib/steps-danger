@@ -11,11 +11,13 @@ import (
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
+	"github.com/kballard/go-shellquote"
 )
 
 // Config ...
 type Config struct {
-	RepositoryURL string `env:"repository_url,required"`
+	RepositoryURL     string `env:"repository_url,required"`
+	AdditionalOptions string `env:"additional_options"`
 
 	GithubAPIToken   stepconf.Secret `env:"github_api_token"`
 	GithubHost       string          `env:"github_host"`
@@ -24,7 +26,6 @@ type Config struct {
 	GitlabAPIToken   stepconf.Secret `env:"gitlab_api_token"`
 	GitlabHost       string          `env:"gitlab_host"`
 	GitlabAPIBaseURL string          `env:"gitlab_api_base_url"`
-	FailOnErrors     string          `env:"fail_on_errors,opt[true,false]"`
 }
 
 func validateInputs(cfg Config) {
@@ -84,7 +85,6 @@ func main() {
 		"DANGER_GITLAB_API_TOKEN":    string(cfg.GitlabAPIToken),
 		"DANGER_GITLAB_HOST":         cfg.GitlabHost,
 		"DANGER_GITLAB_API_BASE_URL": cfg.GitlabAPIBaseURL,
-		"DANGER_FAIL_ON_ERRORS":      cfg.FailOnErrors,
 	} {
 		if value != "" {
 			if err := os.Setenv(key, value); err != nil {
@@ -140,8 +140,12 @@ func main() {
 	fmt.Println()
 	log.Infof("Running danger")
 
-	failOnErrorsFlag := fmt.Sprintf("--fail-on-errors=%s", cfg.FailOnErrors)
-	cmd = command.New("bundle", "exec", "danger", failOnErrorsFlag)
+	additionalOptions, err := shellquote.Split(cfg.AdditionalOptions)
+	if err != nil {
+		failf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
+	}
+
+	cmd = command.New("bundle", append([]string{"exec", "danger"}, additionalOptions...)...)
 	cmd.SetStdout(os.Stdout)
 	cmd.SetStderr(os.Stderr)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
