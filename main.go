@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/bitrise-io/go-utils/command"
 	"github.com/bitrise-io/go-utils/command/gems"
@@ -66,9 +65,6 @@ func main() {
 	if err := stepconf.Parse(&cfg); err != nil {
 		failf("Issue with input: %s", err)
 	}
-
-	// Fix repository URL
-	cfg.RepositoryURL = strings.TrimLeft(cfg.RepositoryURL, "https://")
 
 	stepconf.Print(cfg)
 	fmt.Println()

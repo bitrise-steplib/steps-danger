@@ -18,11 +18,6 @@ workflows:
     - golint:
     - errcheck:
     - go-test:
-    after_run:
-    - test_github
-    
-  test_github:
-    steps:
     - script:
         title: Cleanup _tmp dir
         inputs:
@@ -56,11 +51,46 @@ workflows:
             set -ex
             gem install bundler --force
             bundler -v
+    after_run:
+    - test_https
+    - test_git
+    - test_ssh
+    - test_ssh_with_port
+    
+  test_https:
+    steps:
     - path::./:
-        title: Step test
+        title: Test repository with https scheme
         run_if: true
         inputs:
-        - repository_url: $GIT_REPOSITORY_URL
+        - repository_url: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
+        - github_api_token: $GITHUB_API_TOKEN
+
+  test_git:
+    steps:
+    - path::./:
+        title: Test repository with git scheme
+        run_if: true
+        inputs:
+        - repository_url: git@github.com:bitrise-io/sample-apps-ios-simple-objc.git
+        - github_api_token: $GITHUB_API_TOKEN
+
+  test_ssh:
+    steps:
+    - path::./:
+        title: Test repository with ssh scheme
+        run_if: true
+        inputs:
+        - repository_url: ssh://git@github.com/bitrise-io/sample-apps-ios-simple-objc.git
+        - github_api_token: $GITHUB_API_TOKEN
+
+  test_ssh_with_port:
+    steps:
+    - path::./:
+        title: Test repository with ssh scheme and port
+        run_if: true
+        inputs:
+        - repository_url: ssh://git@github.com:22/bitrise-io/sample-apps-ios-simple-objc.git
         - github_api_token: $GITHUB_API_TOKEN
 
   # ----------------------------------------------------------------
