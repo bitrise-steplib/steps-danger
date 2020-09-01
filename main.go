@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/Masterminds/semver"
@@ -69,7 +68,7 @@ func main() {
 		failf("Issue with input: %s", err)
 	}
 
-	cfg.RepositoryURL := trimmScheme(cfg.RepositoryURL)
+	cfg.RepositoryURL = trimScheme(cfg.RepositoryURL)
 
 	stepconf.Print(cfg)
 	fmt.Println()
@@ -159,25 +158,27 @@ func main() {
 	log.Donef("Done")
 }
 
-// trimmScheme trimms the URL if danger version is <8.0.5
-func trimmScheme(url string) string {
-	rawDangerVersion, err := exec.Command("danger", "--version").CombinedOutput()
+// trimScheme trimms the URL if danger version is <8.0.5
+func trimScheme(url string) string {
+	cmd := command.New("danger", "--version")
+	log.Printf("$ %s", cmd.PrintableCommandArgs())
+
+	dangerVersion, err := cmd.RunAndReturnTrimmedCombinedOutput()
 	if err != nil {
 		log.Errorf("Could not determin danger vesion: %s", err)
 		return url
 	}
 
-	dangerVersion := strings.TrimSpace(string(rawDangerVersion))
-	log.Debugf("Found danger version: %s", dangerVersion)
+	log.Printf("Found danger version: %s", dangerVersion)
 
-	if shouldTrimmScheme(dangerVersion) {
+	if shouldTrimScheme(dangerVersion) {
 		return strings.TrimLeft(url, "https://")
 	}
 
 	return url
 }
 
-func shouldTrimmScheme(rawDangerVersion string) bool {
+func shouldTrimScheme(rawDangerVersion string) bool {
 	dangerVersion, err := semver.NewVersion(rawDangerVersion)
 	if err != nil {
 		log.Errorf("Could not parse danger vesion: %s", err)

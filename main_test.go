@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_ShouldTrimmScheme(t *testing.T) {
+func Test_ShouldTrimScheme(t *testing.T) {
 	scenarios := []struct {
 		input    string
 		expected bool
@@ -22,7 +22,7 @@ func Test_ShouldTrimmScheme(t *testing.T) {
 	}
 
 	for _, scenario := range scenarios {
-		acutalResult := shouldTrimmScheme(scenario.input)
+		acutalResult := shouldTrimScheme(scenario.input)
 		require.Equal(t, scenario.expected, acutalResult)
 	}
 }
