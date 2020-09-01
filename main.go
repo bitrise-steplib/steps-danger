@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Masterminds/semver"
 	"github.com/bitrise-io/go-utils/command"
 	"github.com/bitrise-io/go-utils/command/gems"
 	"github.com/bitrise-io/go-utils/command/rubycommand"
@@ -67,8 +68,7 @@ func main() {
 		failf("Issue with input: %s", err)
 	}
 
-	// Fix repository URL
-	cfg.RepositoryURL = strings.TrimLeft(cfg.RepositoryURL, "https://")
+	cfg.RepositoryURL = trimScheme(cfg.RepositoryURL)
 
 	stepconf.Print(cfg)
 	fmt.Println()
@@ -156,4 +156,40 @@ func main() {
 
 	fmt.Println()
 	log.Donef("Done")
+}
+
+// trimScheme trims the URL if danger version is <8.0.5
+func trimScheme(url string) string {
+	cmd := command.New("danger", "--version")
+	log.Printf("$ %s", cmd.PrintableCommandArgs())
+
+	dangerVersion, err := cmd.RunAndReturnTrimmedCombinedOutput()
+	if err != nil {
+		log.Errorf("Could not determine danger vesion: %s", err)
+		return url
+	}
+
+	log.Printf("Found danger version: %s", dangerVersion)
+
+	if shouldTrimScheme(dangerVersion) {
+		return strings.TrimLeft(url, "https://")
+	}
+
+	return url
+}
+
+func shouldTrimScheme(rawDangerVersion string) bool {
+	dangerVersion, err := semver.NewVersion(rawDangerVersion)
+	if err != nil {
+		log.Errorf("Could not parse danger vesion: %s", err)
+		return false
+	}
+
+	versionConstraint, err := semver.NewConstraint("<8.0.5")
+	if err != nil {
+		log.Errorf("Could not parse version constraint: %s", err)
+		return false
+	}
+
+	return versionConstraint.Check(dangerVersion)
 }
