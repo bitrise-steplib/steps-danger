@@ -165,7 +165,7 @@ func trimScheme(url string) string {
 
 	dangerVersion, err := cmd.RunAndReturnTrimmedCombinedOutput()
 	if err != nil {
-		log.Errorf("Could not determin danger vesion: %s", err)
+		log.Errorf("Could not determine danger vesion: %s", err)
 		return url
 	}
 
