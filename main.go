@@ -69,7 +69,7 @@ func main() {
 		failf("Issue with input: %s", err)
 	}
 
-	trimmScheme(cfg.RepositoryURL)
+	cfg.RepositoryURL := trimmScheme(cfg.RepositoryURL)
 
 	stepconf.Print(cfg)
 	fmt.Println()
