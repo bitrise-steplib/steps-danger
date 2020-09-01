@@ -158,7 +158,7 @@ func main() {
 	log.Donef("Done")
 }
 
-// trimScheme trimms the URL if danger version is <8.0.5
+// trimScheme trims the URL if danger version is <8.0.5
 func trimScheme(url string) string {
 	cmd := command.New("danger", "--version")
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
