@@ -1,7 +1,25 @@
-title: Run Danger
-summary: Danger runs during your CI process, and gives teams the chance to automate common code review chores.
-description: |
-  Danger runs during your CI process, and gives teams the chance to automate common code review chores. This provides another logical step in your build, through this Danger can help lint your rote tasks in daily code review. You can use Danger to codify your teams norms. Leaving humans to think about harder problems. She does this by leaving messages inside your PRs based on rules that you create with the Ruby scripting language. Over time, as rules are adhered to, the message is amended to reflect the current state of the code review.
+title: "Run Danger"
+summary: |-
+[Danger](https://danger.systems/python/) automates common code review chores during your CI process.
+description: |-
+  If inserted in your Workflow on Bitrise, it runs another CI to check any linting issues in your project's code.
+
+  ### Configuring the Step
+
+  1. The **Repository URL of your project** input is automatically filled out.
+  2. If you add any additional options in the **Additional options for the command call**, they will be added to your `bundle exec danger` command call.
+  3. Select a git provider's input section: GitHub or GitLab.
+  4. If you're using GitHub:
+  - Add your access token in the **Access token for your project** input. Click the input's description for more information on how to set up the access token.
+  - Add the host GitHub is running on, for example, `git.corp.evilcorp.com`. Read more about [how to set it up](https://danger.systems/guides/getting_started.html).
+  - Add the GitHub API Enterprise API URL in the **GitHub API base URL** input.
+  5. If you are using GitLab:
+  - Add your access token in the **Access token for your project** input. Click the input's description for more information on how to set up the access token.
+  - Add the host GitLab is running on in the **GitLab host** input. You must add this if you are using Self-Managed GitLab.
+  - Add the **GitLab API base URL**. You must add this if you are using Self-Managed GitLab.
+
+  ### Useful links
+  - [No activity summaries found for test with Danger](https://devcenter.bitrise.io/troubleshooting/no-activity-summaries-found-for-test-with-danger/#the-issue)
 website: https://github.com/bitrise-steplib/steps-danger
 source_code_url: https://github.com/bitrise-steplib/steps-danger
 support_url: https://github.com/bitrise-steplib/steps-danger/issues
@@ -81,9 +99,7 @@ inputs:
 
           If you are self hosting GitLab, you’ll need to generate an access token for the bot user. You can find the section under “Access Tokens” in the bot user’s profile.
 
-          **NOTE:** You can read more about it:
-
-          [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
+          Find more information about Danger in their guides: [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html)
       is_sensitive: true
   - gitlab_host:
     opts:
