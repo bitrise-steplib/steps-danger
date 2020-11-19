@@ -2,7 +2,7 @@ title: "Run Danger"
 summary: |-
 [Danger](https://danger.systems/python/) automates common code review chores during your CI process.
 description: |-
-  If inserted in your Workflow on Bitrise, it runs another CI to check any linting issues in your project's code.
+  If inserted in your Workflow on Bitrise, it runs the Danger CI to check any linting issues in your project's code.
 
   ### Configuring the Step
 
