@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
+	"github.com/bitrise-io/go-steputils/command/gems"
+	"github.com/bitrise-io/go-steputils/command/rubycommand"
+	"github.com/bitrise-io/go-steputils/stepconf"
 	"github.com/bitrise-io/go-utils/command"
-	"github.com/bitrise-io/go-utils/command/gems"
-	"github.com/bitrise-io/go-utils/command/rubycommand"
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/bitrise-io/go-utils/log"
-	"github.com/bitrise-tools/go-steputils/stepconf"
 	"github.com/kballard/go-shellquote"
 )
 
