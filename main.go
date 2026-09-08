@@ -1,17 +1,18 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 
 	"github.com/Masterminds/semver"
-	"github.com/bitrise-io/go-steputils/command/gems"
-	"github.com/bitrise-io/go-steputils/command/rubycommand"
 	"github.com/bitrise-io/go-steputils/stepconf"
-	"github.com/bitrise-io/go-utils/command"
-	"github.com/bitrise-io/go-utils/fileutil"
+	"github.com/bitrise-io/go-steputils/v2/ruby"
 	"github.com/bitrise-io/go-utils/log"
+	"github.com/bitrise-io/go-utils/v2/command"
+	"github.com/bitrise-io/go-utils/v2/env"
+	v2log "github.com/bitrise-io/go-utils/v2/log"
 	"github.com/kballard/go-shellquote"
 )
 
@@ -51,15 +52,31 @@ func failf(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
-func getBundlerVersion() (gems.Version, error) {
-	lockFileContent, err := fileutil.ReadStringFromFile("Gemfile.lock")
+// stdOpts returns the command options the Step's commands share.
+func stdOpts() *command.Opts {
+	return &command.Opts{
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
+}
+
+// getBundlerVersion returns the bundler version the gem lockfile in searchDir was created with.
+// A missing or unreadable lockfile is not an error: bundler is then installed and invoked without a
+// version selector, which is what this Step did before too.
+func getBundlerVersion(searchDir string) (ruby.Version, error) {
+	lockFileContent, err := ruby.GemFileLockContent(searchDir)
 	if err != nil {
-		log.Warnf("Could not read from Gemfile.lock, error: %s", err)
+		if errors.Is(err, ruby.ErrGemLockNotFound) {
+			log.Warnf("No gem lockfile found in %s", searchDir)
+		} else {
+			log.Warnf("Could not read the gem lockfile, error: %s", err)
+		}
 		log.Infof("Using unspecified bundler version")
-		return gems.Version{}, nil
+
+		return ruby.Version{}, nil
 	}
 
-	return gems.ParseBundlerVersion(lockFileContent)
+	return ruby.ParseBundlerVersion(lockFileContent)
 }
 
 func main() {
@@ -68,7 +85,20 @@ func main() {
 		failf("Issue with input: %s", err)
 	}
 
-	cfg.RepositoryURL = trimScheme(cfg.RepositoryURL)
+	logger := v2log.NewLogger()
+	envRepository := env.NewRepository()
+	cmdFactory := command.NewFactory(envRepository)
+	cmdLocator := env.NewCommandLocator()
+
+	// This Step runs danger through bundler, so unlike Steps that can fall back to an already
+	// installed executable, it cannot do anything without Ruby.
+	rubyFactory, err := ruby.NewCommandFactory(cmdFactory, cmdLocator, logger)
+	if err != nil {
+		failf("Failed to check the Ruby installation: %s", err)
+	}
+	rubyEnvironment := ruby.NewEnvironment(rubyFactory, cmdLocator, logger)
+
+	cfg.RepositoryURL = trimScheme(cmdFactory, cfg.RepositoryURL)
 
 	stepconf.Print(cfg)
 	fmt.Println()
@@ -98,27 +128,29 @@ func main() {
 	log.Infof("Checking dependencies")
 	log.Printf("Bundler...")
 
-	bundlerVersion, err := getBundlerVersion()
+	bundlerVersion, err := getBundlerVersion(".")
 	if err != nil {
 		failf("Could not determine required bundler version, error: %s", err)
 	}
 
-	if ok, err := rubycommand.IsGemInstalled("bundler", bundlerVersion.Version); err != nil {
+	if ok, err := rubyEnvironment.IsGemInstalled("bundler", bundlerVersion.Version); err != nil {
 		failf("Failed to check bundler, error: %s", err)
 	} else if !ok {
 		log.Warnf(`Bundler is not installed`)
 		fmt.Println()
 		log.Printf("Installing Bundler")
 
-		installBundlerCommand := gems.InstallBundlerCommand(bundlerVersion)
+		// force = true: in some configurations `bundler _1.2.3_` reports "Command not found" until
+		// bundler is reinstalled.
+		installBundlerCommands := rubyFactory.CreateGemInstall("bundler", bundlerVersion.Version, false, true, stdOpts())
 
-		log.Donef("$ %s", installBundlerCommand.PrintableCommandArgs())
-		fmt.Println()
+		for _, installBundlerCommand := range installBundlerCommands {
+			log.Donef("$ %s", installBundlerCommand.PrintableCommandArgs())
+			fmt.Println()
 
-		installBundlerCommand.SetStdout(os.Stdout).SetStderr(os.Stderr)
-
-		if err := installBundlerCommand.Run(); err != nil {
-			failf("command failed, error: %s", err)
+			if err := installBundlerCommand.Run(); err != nil {
+				failf("command failed, error: %s", err)
+			}
 		}
 	}
 	log.Printf("Bundler installed")
@@ -128,9 +160,7 @@ func main() {
 	fmt.Println()
 	log.Infof("Installing dependencies from your gem file")
 
-	cmd := command.New("bundle", "install")
-	cmd.SetStdout(os.Stdout)
-	cmd.SetStderr(os.Stderr)
+	cmd := rubyFactory.CreateBundleInstall(bundlerVersion.Version, stdOpts())
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	if err := cmd.Run(); err != nil {
@@ -145,9 +175,7 @@ func main() {
 		failf("Failed to shell-quote additional options (%s): %s", cfg.AdditionalOptions, err)
 	}
 
-	cmd = command.New("bundle", append([]string{"exec", "danger"}, additionalOptions...)...)
-	cmd.SetStdout(os.Stdout)
-	cmd.SetStderr(os.Stderr)
+	cmd = rubyFactory.CreateBundleExec("danger", additionalOptions, bundlerVersion.Version, stdOpts())
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	if err := cmd.Run(); err != nil {
@@ -159,8 +187,8 @@ func main() {
 }
 
 // trimScheme trims the URL if danger version is <8.0.5
-func trimScheme(url string) string {
-	cmd := command.New("danger", "--version")
+func trimScheme(cmdFactory command.Factory, url string) string {
+	cmd := cmdFactory.Create("danger", []string{"--version"}, nil)
 	log.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	dangerVersion, err := cmd.RunAndReturnTrimmedCombinedOutput()
