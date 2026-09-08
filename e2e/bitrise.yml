@@ -8,6 +8,12 @@ app:
   - TEST_APP_BRANCH: danger
   # The pull request on the test app that danger comments on.
   - PULL_REQUEST_ID: 8
+  # danger only recognises Bitrise as its CI when this key is present: its Bitrise CI source is
+  # `env.key? "BITRISE_IO"`, and without it BITRISE_PULL_REQUEST is never read. bitrise.io sets it
+  # when it starts a build, so this is redundant on CI, but it is a platform variable rather than a
+  # CLI one -- nothing sets it for a local `bitrise run`, where danger would then look for a
+  # different CI or none at all.
+  - BITRISE_IO: true
   # Shared secrets
   - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
 

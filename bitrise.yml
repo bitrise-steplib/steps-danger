@@ -17,6 +17,9 @@ workflows:
     - TEST_APP_URL: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
     - TEST_APP_BRANCH: danger
     - PULL_REQUEST_ID: 8
+    # danger's Bitrise CI source is `env.key? "BITRISE_IO"`. bitrise.io sets it when it starts a
+    # build; this is for running the workflow locally, where nothing does.
+    - BITRISE_IO: true
     - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
     steps:
     - script:
