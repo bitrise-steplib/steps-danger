@@ -180,12 +180,10 @@ func trimScheme(url string) string {
 
 // trimURLScheme removes the scheme from a repository URL, if it has one.
 //
-// It used to be strings.TrimLeft(url, "https://"), whose second argument is a *cutset*, not a
-// prefix: every leading character in "htps:/" was removed, so a host starting with one of those
-// letters lost part of its name -- https://tools.corp.com became ools.corp.com. That went
-// unnoticed because github.com starts with a letter outside the cutset. It also means the old code
-// stripped ssh:// as well, which the tests below keep, so scm URLs without a scheme
-// (git@github.com:owner/repo.git) are still returned untouched.
+// This replaced strings.TrimLeft(url, "https://"), whose second argument is a cutset rather than a
+// prefix: it ate any leading "htps:/" character, so https://tools.corp.com became ools.corp.com.
+// That cutset stripped ssh:// too, which the tests keep, hence removing any scheme and not just
+// the one.
 func trimURLScheme(url string) string {
 	const schemeSeparator = "://"
 
