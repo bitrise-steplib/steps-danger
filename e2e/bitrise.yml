@@ -1,0 +1,80 @@
+format_version: "11"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+app:
+  envs:
+  # Shared configs
+  - TEST_APP_URL: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
+  - TEST_APP_BRANCH: danger
+  # The pull request on the test app that danger comments on.
+  - PULL_REQUEST_ID: 8
+  # danger only recognises Bitrise as its CI when this key is present: its Bitrise CI source is
+  # `env.key? "BITRISE_IO"`, and without it BITRISE_PULL_REQUEST is never read. bitrise.io sets it
+  # when it starts a build, so this is redundant on CI, but it is a platform variable rather than a
+  # CLI one -- nothing sets it for a local `bitrise run`, where danger would then look for a
+  # different CI or none at all.
+  - BITRISE_IO: true
+  # Shared secrets
+  - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
+
+workflows:
+  # Each test runs danger against the same pull request through a differently spelled repository
+  # URL, because the Step rewrites the URL for danger versions before 8.0.5.
+  test_https_url:
+    envs:
+    - REPOSITORY_URL: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
+    after_run:
+    - _run
+
+  test_scp_style_url:
+    envs:
+    - REPOSITORY_URL: git@github.com:bitrise-io/sample-apps-ios-simple-objc.git
+    after_run:
+    - _run
+
+  test_ssh_url:
+    envs:
+    - REPOSITORY_URL: ssh://git@github.com/bitrise-io/sample-apps-ios-simple-objc.git
+    after_run:
+    - _run
+
+  test_ssh_url_with_port:
+    envs:
+    - REPOSITORY_URL: ssh://git@github.com:22/bitrise-io/sample-apps-ios-simple-objc.git
+    after_run:
+    - _run
+
+  _run:
+    description: |
+      Clones the test app, points danger at one of its pull requests, and runs the Step.
+      The test app carries the Gemfile that pins danger, so this exercises the bundler path.
+    steps:
+    - script:
+        title: Clean _tmp dir
+        inputs:
+        - content: |-
+            #!/bin/env bash
+            set -ex
+            rm -rf ./_tmp
+    - change-workdir:
+        title: Switch working dir to _tmp
+        inputs:
+        - path: ./_tmp
+        - is_create_path: true
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git:
+        inputs:
+        - repository_url: $TEST_APP_URL
+        - branch: $TEST_APP_BRANCH
+        - clone_into_dir: .
+    - script:
+        title: Set the pull request danger should comment on
+        inputs:
+        - content: |-
+            #!/bin/env bash
+            set -ex
+            envman add --key BITRISE_PULL_REQUEST --value "$PULL_REQUEST_ID"
+    - path::./:
+        title: Run danger with $REPOSITORY_URL
+        inputs:
+        - repository_url: $REPOSITORY_URL
+        - github_api_token: $GITHUB_API_TOKEN
