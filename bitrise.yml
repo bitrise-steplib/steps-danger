@@ -1,105 +1,53 @@
-format_version: 6
+format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
-app:
-  envs:
-  - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
-  - GIT_REPOSITORY_URL: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
-  - BRANCH: danger
-  - PULL_REQUEST_ID: 8
-  - BITRISE_IO: true
-
 workflows:
-  test:
-    before_run:
-    - audit-this-step
+  check:
     steps:
-    - go-list:
-    - golint:
-    - errcheck:
-    - go-test:
-    - script:
-        title: Cleanup _tmp dir
+    - git::https://github.com/bitrise-steplib/steps-check.git: { }
+
+  e2e:
+    steps:
+    - git::https://github.com/bitrise-steplib/steps-check.git:
         inputs:
-        - content: rm -rf ./_tmp
+        - workflow: e2e
+
+  sample:
+    envs:
+    - TEST_APP_URL: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
+    - TEST_APP_BRANCH: danger
+    - PULL_REQUEST_ID: 8
+    - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
+    steps:
+    - script:
+        title: Clean _tmp dir
+        inputs:
+        - content: |-
+            #!/bin/env bash
+            set -ex
+            rm -rf ./_tmp
     - change-workdir:
-        title: Switch PWD to _tmp dir
+        title: Switch working dir to _tmp
         inputs:
         - path: ./_tmp
         - is_create_path: true
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git:
+        inputs:
+        - repository_url: $TEST_APP_URL
+        - branch: $TEST_APP_BRANCH
+        - clone_into_dir: .
     - script:
-        title: Clone the sample app
+        title: Set the pull request danger should comment on
         inputs:
         - content: |-
-            #!/bin/bash
+            #!/bin/env bash
             set -ex
-            git clone $GIT_REPOSITORY_URL .
-            git checkout $BRANCH
-    - script:
-        title: Set PULL_REQUEST_ID
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            envman add --key BITRISE_PULL_REQUEST --value $PULL_REQUEST_ID
-    - script:
-        title: Ensure Bundler v2
-        run_if: .IsCI
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            gem install bundler --force
-            bundler -v
-    after_run:
-    - test_https
-    - test_git
-    - test_ssh
-    - test_ssh_with_port
-    
-  test_https:
-    steps:
+            envman add --key BITRISE_PULL_REQUEST --value "$PULL_REQUEST_ID"
     - path::./:
-        title: Test repository with https scheme
-        run_if: true
         inputs:
-        - repository_url: https://github.com/bitrise-io/sample-apps-ios-simple-objc.git
+        - repository_url: $TEST_APP_URL
         - github_api_token: $GITHUB_API_TOKEN
 
-  test_git:
+  generate_readme:
     steps:
-    - path::./:
-        title: Test repository with git scheme
-        run_if: true
-        inputs:
-        - repository_url: git@github.com:bitrise-io/sample-apps-ios-simple-objc.git
-        - github_api_token: $GITHUB_API_TOKEN
-
-  test_ssh:
-    steps:
-    - path::./:
-        title: Test repository with ssh scheme
-        run_if: true
-        inputs:
-        - repository_url: ssh://git@github.com/bitrise-io/sample-apps-ios-simple-objc.git
-        - github_api_token: $GITHUB_API_TOKEN
-
-  test_ssh_with_port:
-    steps:
-    - path::./:
-        title: Test repository with ssh scheme and port
-        run_if: true
-        inputs:
-        - repository_url: ssh://git@github.com:22/bitrise-io/sample-apps-ios-simple-objc.git
-        - github_api_token: $GITHUB_API_TOKEN
-
-  # ----------------------------------------------------------------
-  # --- workflows to Share this step into a Step Library
-  audit-this-step:
-    steps:
-    - script:
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            stepman audit --step-yml ./step.yml
+    - git::https://github.com/bitrise-steplib/steps-readme-generator.git@main: { }
