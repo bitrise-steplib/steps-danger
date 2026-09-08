@@ -179,11 +179,6 @@ func trimScheme(url string) string {
 }
 
 // trimURLScheme removes the scheme from a repository URL, if it has one.
-//
-// This replaced strings.TrimLeft(url, "https://"), whose second argument is a cutset rather than a
-// prefix: it ate any leading "htps:/" character, so https://tools.corp.com became ools.corp.com.
-// That cutset stripped ssh:// too, which the tests keep, hence removing any scheme and not just
-// the one.
 func trimURLScheme(url string) string {
 	const schemeSeparator = "://"
 
