@@ -14,8 +14,11 @@ app:
   # CLI one -- nothing sets it for a local `bitrise run`, where danger would then look for a
   # different CI or none at all.
   - BITRISE_IO: true
-  # Shared secrets
-  - GITHUB_API_TOKEN: $GITHUB_API_TOKEN
+  # Shared secrets. The key is the unified CI convention: it names the GCP Secret Manager secret
+  # the secret generator fetches, and the value references the env of the same name. The token
+  # needs push access on the test app repository -- danger sets a commit status on the pull
+  # request, and without it danger only warns and the tests pass without reporting anything.
+  - SAMPLE_APPS_SIMPLE_OBJC_GITHUB_TOKEN: $SAMPLE_APPS_SIMPLE_OBJC_GITHUB_TOKEN
 
 workflows:
   # Each test runs danger against the same pull request through a differently spelled repository
@@ -77,4 +80,4 @@ workflows:
         title: Run danger with $REPOSITORY_URL
         inputs:
         - repository_url: $REPOSITORY_URL
-        - github_api_token: $GITHUB_API_TOKEN
+        - github_api_token: $SAMPLE_APPS_SIMPLE_OBJC_GITHUB_TOKEN
