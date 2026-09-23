@@ -172,7 +172,18 @@ func trimScheme(url string) string {
 	log.Printf("Found danger version: %s", dangerVersion)
 
 	if shouldTrimScheme(dangerVersion) {
-		return strings.TrimLeft(url, "https://")
+		return trimURLScheme(url)
+	}
+
+	return url
+}
+
+// trimURLScheme removes the scheme from a repository URL, if it has one.
+func trimURLScheme(url string) string {
+	const schemeSeparator = "://"
+
+	if i := strings.Index(url, schemeSeparator); i >= 0 {
+		return url[i+len(schemeSeparator):]
 	}
 
 	return url

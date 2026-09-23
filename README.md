@@ -1,97 +1,66 @@
 # Run Danger
 
-Danger runs during your CI process, and gives teams the chance to automate common code review chores. This provides another logical step in your build, through this Danger can help lint your rote tasks in daily code review. You can use Danger to codify your teams norms. Leaving humans to think about harder problems. She does this by leaving messages inside your PRs based on rules that you create with the Ruby scripting language. Over time, as rules are adhered to, the message is amended to reflect the current state of the code review.
+[![Step changelog](https://shields.io/github/v/release/bitrise-steplib/steps-danger?include_prereleases&label=changelog&color=blueviolet)](https://github.com/bitrise-steplib/steps-danger/releases)
 
-## How to use this Step
+[Danger](https://danger.systems/python/) automates common code review chores during your CI process.
 
-Can be run directly with the [bitrise CLI](https://github.com/bitrise-io/bitrise),
-just `git clone` this repository, `cd` into it's folder in your Terminal/Command Line
-and call `bitrise run test`.
+<details>
+<summary>Description</summary>
 
-*Check the `bitrise.yml` file for required inputs which have to be
-added to your `.bitrise.secrets.yml` file!*
+If inserted in your Workflow on Bitrise, it runs the Danger CI to check any linting issues in your project's code.
 
-Step by step:
+### Configuring the Step
 
-1. Open up your Terminal / Command Line
-2. `git clone` the repository
-3. `cd` into the directory of the step (the one you just `git clone`d)
-5. Create a `.bitrise.secrets.yml` file in the same directory of `bitrise.yml`
-   (the `.bitrise.secrets.yml` is a git ignored file, you can store your secrets in it)
-6. Check the `bitrise.yml` file for any secret you should set in `.bitrise.secrets.yml`
-  * Best practice is to mark these options with something like `# define these in your .bitrise.secrets.yml`, in the `app:envs` section.
-7. Once you have all the required secret parameters in your `.bitrise.secrets.yml` you can just run this step with the [bitrise CLI](https://github.com/bitrise-io/bitrise): `bitrise run test`
+1. The **Repository URL of your project** input is automatically filled out.
+2. If you add any additional options in the **Additional options for the command call**, they will be added to your `bundle exec danger` command call.
+3. Select a git provider's input section: GitHub or GitLab.
+4. If you're using GitHub:
+- Add your access token in the **Access token for your project** input. Click the input's description for more information on how to set up the access token.
+- Add the host GitHub is running on, for example, `git.corp.evilcorp.com`. Read more about [how to set it up](https://danger.systems/guides/getting_started.html).
+- Add the GitHub API Enterprise API URL in the **GitHub API base URL** input.
+5. If you are using GitLab:
+- Add your access token in the **Access token for your project** input. Click the input's description for more information on how to set up the access token.
+- Add the host GitLab is running on in the **GitLab host** input. You must add this if you are using Self-Managed GitLab.
+- Add the **GitLab API base URL**. You must add this if you are using Self-Managed GitLab.
 
-An example `.bitrise.secrets.yml` file:
+### Useful links
+- [No activity summaries found for test with Danger](https://devcenter.bitrise.io/troubleshooting/no-activity-summaries-found-for-test-with-danger/#the-issue)
+</details>
 
-```
-envs:
-- A_SECRET_PARAM_ONE: the value for secret one
-- A_SECRET_PARAM_TWO: the value for secret two
-```
+## 🧩 Get started
 
-## How to create your own step
+Add this step directly to your workflow in the [Bitrise Workflow Editor](https://docs.bitrise.io/en/bitrise-ci/workflows-and-pipelines/steps/adding-steps-to-a-workflow.html).
 
-1. Create a new git repository for your step (**don't fork** the *step template*, create a *new* repository)
-2. Copy the [step template](https://github.com/bitrise-steplib/step-template) files into your repository
-3. Fill the `step.sh` with your functionality
-4. Wire out your inputs to `step.yml` (`inputs` section)
-5. Fill out the other parts of the `step.yml` too
-6. Provide test values for the inputs in the `bitrise.yml`
-7. Run your step with `bitrise run test` - if it works, you're ready
+You can also run this step directly with [Bitrise CLI](https://github.com/bitrise-io/bitrise).
 
-__For Step development guidelines & best practices__ check this documentation: [https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md](https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md).
+## ⚙️ Configuration
 
-**NOTE:**
+<details>
+<summary>Inputs</summary>
 
-If you want to use your step in your project's `bitrise.yml`:
+| Key | Description | Flags | Default |
+| --- | --- | --- | --- |
+| `repository_url` | Repository URL of your project | required | `$GIT_REPOSITORY_URL` |
+| `github_api_token` | **SETTING UP AN ACCESS TOKEN**  [Here’s the link](https://github.com/settings/tokens/new), you should open this in the private session where you just created the new GitHub account. Again, the rights that you give to the token depend on the openness of your projects. You’ll want to save for later, when you add a `github_api_token` to the step.  **TOKENS FOR OSS PROJECTS**  We recommend giving the token the smallest scope possible. This means just public\_repo, this scopes limits Danger’s abilities to just writing comments on OSS projects. Because the token can be quite easily be extracted from the CI environment, this minimizes the chance for bad actors to cause chaos with it.  **TOKENS FOR CLOSED SOURCE PROJECTS**  We recommend giving access to the whole repo scope, and its children.  **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html) | sensitive |  |
+| `github_host` | The host that GitHub is running on. You need to set this if you are using **Enterprise GitHub**. You can work with GitHub Enterprise by setting the `github_host` and the `github_api_base_url` inputs.  **For example:** `git.corp.evilcorp.com`  **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html) |  |  |
+| `github_api_base_url` | The host that the GitHub Enterprise API is reachable on. You need to set this if you are using **Enterprise GitHub**. You can work with GitHub Enterprise by setting the `github_host` and the `github_api_base_url` inputs.  **For example:** `https://git.corp.evilcorp.com/api/v3`  **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html) |  |  |
+| `gitlab_api_token` | **SETTING UP AN ACCESS TOKEN**  Here’s the link, you should open this in the private session where you have just created the new GitLab account. You’ll want to copy the token for later, when you add a `gitlab_api_token` to the step.  If you are self hosting GitLab, you’ll need to generate an access token for the bot user. You can find the section under “Access Tokens” in the bot user’s profile.  Find more information about Danger in their guides: [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html) | sensitive |  |
+| `gitlab_host` | The host that GitLab is running on. You need to set this if you are using **Self-Managed GitLab**. You can work with Self-Managed GitLab by setting the `gitlab_host` and the `gitlab_api_base_url` inputs.  **For example:** `git.corp.evilcorp.com`  **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html) |  |  |
+| `gitlab_api_base_url` | The host that the Self-Managed GitLab API is reachable on. You need to set this if you are using **Self-Managed GitLab**. You can work with Self-Managed GitLab by setting the `gitlab_host` and the `gitlab_api_base_url` inputs.  **For example:** `https://git.corp.evilcorp.com/api/v4`  **You can read more about it here:** [https://danger.systems/guides/getting_started.html](https://danger.systems/guides/getting_started.html) |  |  |
+| `additional_options` | Additional commands and options to append to the danger command call. The provided value will be appended to the `bundle exec danger` command call, as is. |  | `--fail-on-errors=true` |
+</details>
 
-1. git push the step into it's repository
-2. reference it in your `bitrise.yml` with the `git::PUBLIC-GIT-CLONE-URL@BRANCH` step reference style:
+<details>
+<summary>Outputs</summary>
+There are no outputs defined in this step
+</details>
 
-```
-- git::https://github.com/user/my-step.git@branch:
-   title: My step
-   inputs:
-   - my_input_1: "my value 1"
-   - my_input_2: "my value 2"
-```
+## 🙋 Contributing
 
-You can find more examples of step reference styles
-in the [bitrise CLI repository](https://github.com/bitrise-io/bitrise/blob/master/_examples/tutorials/steps-and-workflows/bitrise.yml#L65).
+We welcome [pull requests](https://github.com/bitrise-steplib/steps-danger/pulls) and [issues](https://github.com/bitrise-steplib/steps-danger/issues) against this repository.
 
-## How to contribute to this Step
+For pull requests, work on your changes in a forked repository and use the Bitrise CLI to [run step tests locally](https://docs.bitrise.io/en/bitrise-ci/bitrise-cli/running-your-first-local-build-with-the-cli.html).
 
-1. Fork this repository
-2. `git clone` it
-3. Create a branch you'll work on
-4. To use/test the step just follow the **How to use this Step** section
-5. Do the changes you want to
-6. Run/test the step before sending your contribution
-  * You can also test the step in your `bitrise` project, either on your Mac or on [bitrise.io](https://www.bitrise.io)
-  * You just have to replace the step ID in your project's `bitrise.yml` with either a relative path, or with a git URL format
-  * (relative) path format: instead of `- original-step-id:` use `- path::./relative/path/of/script/on/your/Mac:`
-  * direct git URL format: instead of `- original-step-id:` use `- git::https://github.com/user/step.git@branch:`
-  * You can find more example of alternative step referencing at: https://github.com/bitrise-io/bitrise/blob/master/_examples/tutorials/steps-and-workflows/bitrise.yml
-7. Once you're done just commit your changes & create a Pull Request
+Learn more about developing steps:
 
-
-## Share your own Step
-
-You can share your Step or step version with the [bitrise CLI](https://github.com/bitrise-io/bitrise). If you use the `bitrise.yml` included in this repository, all you have to do is:
-
-1. In your Terminal / Command Line `cd` into this directory (where the `bitrise.yml` of the step is located)
-1. Run: `bitrise run test` to test the step
-1. Run: `bitrise run audit-this-step` to audit the `step.yml`
-1. Check the `share-this-step` workflow in the `bitrise.yml`, and fill out the
-   `envs` if you haven't done so already (don't forget to bump the version number if this is an update
-   of your step!)
-1. Then run: `bitrise run share-this-step` to share the step (version) you specified in the `envs`
-1. Send the Pull Request, as described in the logs of `bitrise run share-this-step`
-
-That's all ;)
-
-## Trigger a new release
-
-- __merge every code changes__ to the `master` branch
-- __push the new version tag__ to the `master` branch
+- [Create your own step](https://docs.bitrise.io/en/bitrise-ci/workflows-and-pipelines/developing-your-own-bitrise-step/developing-a-new-step.html)
