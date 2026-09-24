@@ -9,12 +9,13 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/bitrise-io/go-steputils/stepconf"
 	"github.com/bitrise-io/go-steputils/v2/ruby"
-	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-io/go-utils/v2/command"
 	"github.com/bitrise-io/go-utils/v2/env"
-	v2log "github.com/bitrise-io/go-utils/v2/log"
+	"github.com/bitrise-io/go-utils/v2/log"
 	"github.com/kballard/go-shellquote"
 )
+
+var logger = log.NewLogger()
 
 // Config ...
 type Config struct {
@@ -48,7 +49,7 @@ func validateInputs(cfg Config) {
 }
 
 func failf(format string, v ...interface{}) {
-	log.Errorf(format, v...)
+	logger.Errorf(format, v...)
 	os.Exit(1)
 }
 
@@ -67,11 +68,11 @@ func getBundlerVersion(searchDir string) (ruby.Version, error) {
 	lockFileContent, err := ruby.GemFileLockContent(searchDir)
 	if err != nil {
 		if errors.Is(err, ruby.ErrGemLockNotFound) {
-			log.Warnf("No gem lockfile found in %s", searchDir)
+			logger.Warnf("No gem lockfile found in %s", searchDir)
 		} else {
-			log.Warnf("Could not read the gem lockfile, error: %s", err)
+			logger.Warnf("Could not read the gem lockfile, error: %s", err)
 		}
-		log.Infof("Using unspecified bundler version")
+		logger.Infof("Using unspecified bundler version")
 
 		return ruby.Version{}, nil
 	}
@@ -85,7 +86,6 @@ func main() {
 		failf("Issue with input: %s", err)
 	}
 
-	logger := v2log.NewLogger()
 	envRepository := env.NewRepository()
 	cmdFactory := command.NewFactory(envRepository)
 	cmdLocator := env.NewCommandLocator()
@@ -125,8 +125,8 @@ func main() {
 
 	//
 	// Check dependencies
-	log.Infof("Checking dependencies")
-	log.Printf("Bundler...")
+	logger.Infof("Checking dependencies")
+	logger.Printf("Bundler...")
 
 	bundlerVersion, err := getBundlerVersion(".")
 	if err != nil {
@@ -136,16 +136,16 @@ func main() {
 	if ok, err := rubyEnvironment.IsGemInstalled("bundler", bundlerVersion.Version); err != nil {
 		failf("Failed to check bundler, error: %s", err)
 	} else if !ok {
-		log.Warnf(`Bundler is not installed`)
+		logger.Warnf(`Bundler is not installed`)
 		fmt.Println()
-		log.Printf("Installing Bundler")
+		logger.Printf("Installing Bundler")
 
 		// force = true: in some configurations `bundler _1.2.3_` reports "Command not found" until
 		// bundler is reinstalled.
 		installBundlerCommands := rubyFactory.CreateGemInstall("bundler", bundlerVersion.Version, false, true, stdOpts())
 
 		for _, installBundlerCommand := range installBundlerCommands {
-			log.Donef("$ %s", installBundlerCommand.PrintableCommandArgs())
+			logger.Donef("$ %s", installBundlerCommand.PrintableCommandArgs())
 			fmt.Println()
 
 			if err := installBundlerCommand.Run(); err != nil {
@@ -153,22 +153,22 @@ func main() {
 			}
 		}
 	}
-	log.Printf("Bundler installed")
+	logger.Printf("Bundler installed")
 
 	//
 	// Danger
 	fmt.Println()
-	log.Infof("Installing dependencies from your gem file")
+	logger.Infof("Installing dependencies from your gem file")
 
 	cmd := rubyFactory.CreateBundleInstall(bundlerVersion.Version, stdOpts())
-	log.Printf("$ %s", cmd.PrintableCommandArgs())
+	logger.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	if err := cmd.Run(); err != nil {
 		failf("Failed to run bundle install, error: %s", err)
 	}
 
 	fmt.Println()
-	log.Infof("Running danger")
+	logger.Infof("Running danger")
 
 	additionalOptions, err := shellquote.Split(cfg.AdditionalOptions)
 	if err != nil {
@@ -176,28 +176,28 @@ func main() {
 	}
 
 	cmd = rubyFactory.CreateBundleExec("danger", additionalOptions, bundlerVersion.Version, stdOpts())
-	log.Printf("$ %s", cmd.PrintableCommandArgs())
+	logger.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	if err := cmd.Run(); err != nil {
 		failf("Failed to run bundle exec danger, error: %s", err)
 	}
 
 	fmt.Println()
-	log.Donef("Done")
+	logger.Donef("Done")
 }
 
 // trimScheme trims the URL if danger version is <8.0.5
 func trimScheme(cmdFactory command.Factory, url string) string {
 	cmd := cmdFactory.Create("danger", []string{"--version"}, nil)
-	log.Printf("$ %s", cmd.PrintableCommandArgs())
+	logger.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	dangerVersion, err := cmd.RunAndReturnTrimmedCombinedOutput()
 	if err != nil {
-		log.Errorf("Could not determine danger vesion: %s", err)
+		logger.Errorf("Could not determine danger vesion: %s", err)
 		return url
 	}
 
-	log.Printf("Found danger version: %s", dangerVersion)
+	logger.Printf("Found danger version: %s", dangerVersion)
 
 	if shouldTrimScheme(dangerVersion) {
 		return trimURLScheme(url)
@@ -220,13 +220,13 @@ func trimURLScheme(url string) string {
 func shouldTrimScheme(rawDangerVersion string) bool {
 	dangerVersion, err := semver.NewVersion(rawDangerVersion)
 	if err != nil {
-		log.Errorf("Could not parse danger vesion: %s", err)
+		logger.Errorf("Could not parse danger vesion: %s", err)
 		return false
 	}
 
 	versionConstraint, err := semver.NewConstraint("<8.0.5")
 	if err != nil {
-		log.Errorf("Could not parse version constraint: %s", err)
+		logger.Errorf("Could not parse version constraint: %s", err)
 		return false
 	}
 
