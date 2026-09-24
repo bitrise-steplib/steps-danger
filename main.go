@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 
@@ -102,7 +101,7 @@ func main() {
 	cfg.RepositoryURL = trimScheme(cmdFactory, cfg.RepositoryURL)
 
 	stepconf.Print(cfg)
-	fmt.Println()
+	logger.Println()
 
 	validateInputs(cfg)
 
@@ -138,7 +137,7 @@ func main() {
 		failf("Failed to check bundler: %s", err)
 	} else if !ok {
 		logger.Warnf(`Bundler is not installed`)
-		fmt.Println()
+		logger.Println()
 		logger.Printf("Installing Bundler")
 
 		// force = true: in some configurations `bundler _1.2.3_` reports "Command not found" until
@@ -147,7 +146,7 @@ func main() {
 
 		for _, installBundlerCommand := range installBundlerCommands {
 			logger.Donef("$ %s", installBundlerCommand.PrintableCommandArgs())
-			fmt.Println()
+			logger.Println()
 
 			if err := installBundlerCommand.Run(); err != nil {
 				failf("Failed to install bundler: %s", err)
@@ -158,7 +157,7 @@ func main() {
 
 	//
 	// Danger
-	fmt.Println()
+	logger.Println()
 	logger.Infof("Installing dependencies from your gem file")
 
 	cmd := rubyFactory.CreateBundleInstall(bundlerVersion.Version, stdOpts())
@@ -168,7 +167,7 @@ func main() {
 		failf("Failed to run bundle install: %s", err)
 	}
 
-	fmt.Println()
+	logger.Println()
 	logger.Infof("Running danger")
 
 	additionalOptions, err := shellquote.Split(cfg.AdditionalOptions)
@@ -183,7 +182,7 @@ func main() {
 		failf("Failed to run bundle exec danger: %s", err)
 	}
 
-	fmt.Println()
+	logger.Println()
 	logger.Donef("Done")
 }
 
