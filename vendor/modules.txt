@@ -1,27 +1,30 @@
 # github.com/Masterminds/semver v1.5.0
 ## explicit
 github.com/Masterminds/semver
-# github.com/bitrise-io/go-steputils v1.0.5
-## explicit; go 1.15
-github.com/bitrise-io/go-steputils/stepconf
 # github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.54
 ## explicit; go 1.21
 github.com/bitrise-io/go-steputils/v2/ruby
-# github.com/bitrise-io/go-utils v1.0.8
-## explicit; go 1.13
-github.com/bitrise-io/go-utils/colorstring
-github.com/bitrise-io/go-utils/parseutil
-github.com/bitrise-io/go-utils/pointers
+github.com/bitrise-io/go-steputils/v2/stepconf
 # github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.39
 ## explicit; go 1.21
 github.com/bitrise-io/go-utils/v2/command
 github.com/bitrise-io/go-utils/v2/env
+github.com/bitrise-io/go-utils/v2/filedownloader
+github.com/bitrise-io/go-utils/v2/fileutil
 github.com/bitrise-io/go-utils/v2/log
 github.com/bitrise-io/go-utils/v2/log/colorstring
+github.com/bitrise-io/go-utils/v2/parseutil
 github.com/bitrise-io/go-utils/v2/pathutil
+github.com/bitrise-io/go-utils/v2/retryhttp
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/hashicorp/go-cleanhttp v0.5.2
+## explicit; go 1.13
+github.com/hashicorp/go-cleanhttp
+# github.com/hashicorp/go-retryablehttp v0.7.7
+## explicit; go 1.19
+github.com/hashicorp/go-retryablehttp
 # github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 ## explicit
 github.com/kballard/go-shellquote

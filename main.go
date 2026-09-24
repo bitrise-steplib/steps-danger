@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
-	"github.com/bitrise-io/go-steputils/stepconf"
 	"github.com/bitrise-io/go-steputils/v2/ruby"
+	"github.com/bitrise-io/go-steputils/v2/stepconf"
 	"github.com/bitrise-io/go-utils/v2/command"
 	"github.com/bitrise-io/go-utils/v2/env"
 	"github.com/bitrise-io/go-utils/v2/log"
@@ -81,12 +81,13 @@ func getBundlerVersion(searchDir string) (ruby.Version, error) {
 }
 
 func main() {
+	envRepository := env.NewRepository()
+
 	var cfg Config
-	if err := stepconf.Parse(&cfg); err != nil {
+	if err := stepconf.NewInputParser(envRepository).Parse(&cfg); err != nil {
 		failf("Issue with input: %s", err)
 	}
 
-	envRepository := env.NewRepository()
 	cmdFactory := command.NewFactory(envRepository)
 	cmdLocator := env.NewCommandLocator()
 
