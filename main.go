@@ -90,8 +90,6 @@ func main() {
 	cmdFactory := command.NewFactory(envRepository)
 	cmdLocator := env.NewCommandLocator()
 
-	// This Step runs danger through bundler, so unlike Steps that can fall back to an already
-	// installed executable, it cannot do anything without Ruby.
 	rubyFactory, err := ruby.NewCommandFactory(cmdFactory, cmdLocator, logger)
 	if err != nil {
 		failf("Failed to check the Ruby installation: %s", err)
