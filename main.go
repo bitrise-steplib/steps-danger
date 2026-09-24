@@ -70,7 +70,7 @@ func getBundlerVersion(searchDir string) (ruby.Version, error) {
 		if errors.Is(err, ruby.ErrGemLockNotFound) {
 			logger.Warnf("No gem lockfile found in %s", searchDir)
 		} else {
-			logger.Warnf("Could not read the gem lockfile, error: %s", err)
+			logger.Warnf("Could not read the gem lockfile: %s", err)
 		}
 		logger.Infof("Using unspecified bundler version")
 
@@ -119,7 +119,7 @@ func main() {
 	} {
 		if value != "" {
 			if err := os.Setenv(key, value); err != nil {
-				failf("Failed to set env %s, error: %s", key, err)
+				failf("Failed to set env %s: %s", key, err)
 			}
 		}
 	}
@@ -131,11 +131,11 @@ func main() {
 
 	bundlerVersion, err := getBundlerVersion(".")
 	if err != nil {
-		failf("Could not determine required bundler version, error: %s", err)
+		failf("Could not determine required bundler version: %s", err)
 	}
 
 	if ok, err := rubyEnvironment.IsGemInstalled("bundler", bundlerVersion.Version); err != nil {
-		failf("Failed to check bundler, error: %s", err)
+		failf("Failed to check bundler: %s", err)
 	} else if !ok {
 		logger.Warnf(`Bundler is not installed`)
 		fmt.Println()
@@ -150,7 +150,7 @@ func main() {
 			fmt.Println()
 
 			if err := installBundlerCommand.Run(); err != nil {
-				failf("command failed, error: %s", err)
+				failf("Failed to install bundler: %s", err)
 			}
 		}
 	}
@@ -165,7 +165,7 @@ func main() {
 	logger.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	if err := cmd.Run(); err != nil {
-		failf("Failed to run bundle install, error: %s", err)
+		failf("Failed to run bundle install: %s", err)
 	}
 
 	fmt.Println()
@@ -180,7 +180,7 @@ func main() {
 	logger.Printf("$ %s", cmd.PrintableCommandArgs())
 
 	if err := cmd.Run(); err != nil {
-		failf("Failed to run bundle exec danger, error: %s", err)
+		failf("Failed to run bundle exec danger: %s", err)
 	}
 
 	fmt.Println()
