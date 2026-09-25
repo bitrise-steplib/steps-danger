@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -70,6 +72,78 @@ func Test_trimURLScheme(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			require.Equal(t, tt.want, trimURLScheme(tt.url))
+		})
+	}
+}
+
+func Test_getBundlerVersion(t *testing.T) {
+	const lockWithBundler = `GEM
+  remote: https://rubygems.org/
+  specs:
+    danger (8.0.5)
+
+DEPENDENCIES
+  danger
+
+BUNDLED WITH
+   2.4.12
+`
+	const lockWithoutBundler = `GEM
+  remote: https://rubygems.org/
+  specs:
+    danger (8.0.5)
+
+DEPENDENCIES
+  danger
+`
+
+	tests := []struct {
+		name string
+		// lockFileName is the gem lockfile to write, or empty to write none.
+		lockFileName string
+		lockContent  string
+		wantVersion  string
+		wantFound    bool
+	}{
+		{
+			// Not an error: bundler is then installed and invoked without a version selector.
+			name: "no gem lockfile",
+		},
+		{
+			name:         "Gemfile.lock naming a bundler version",
+			lockFileName: "Gemfile.lock",
+			lockContent:  lockWithBundler,
+			wantVersion:  "2.4.12",
+			wantFound:    true,
+		},
+		{
+			name:         "Gemfile.lock without a BUNDLED WITH section",
+			lockFileName: "Gemfile.lock",
+			lockContent:  lockWithoutBundler,
+		},
+		{
+			// gems.locked is the other name bundler accepts. The v1 helper this replaced only ever
+			// looked for Gemfile.lock.
+			name:         "gems.locked is honoured too",
+			lockFileName: "gems.locked",
+			lockContent:  lockWithBundler,
+			wantVersion:  "2.4.12",
+			wantFound:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			searchDir := t.TempDir()
+			if tt.lockFileName != "" {
+				require.NoError(t, os.WriteFile(filepath.Join(searchDir, tt.lockFileName), []byte(tt.lockContent), 0600))
+			}
+
+			got, err := getBundlerVersion(searchDir)
+
+			require.NoError(t, err)
+			require.Equal(t, tt.wantVersion, got.Version)
+			require.Equal(t, tt.wantFound, got.Found)
 		})
 	}
 }
